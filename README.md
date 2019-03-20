@@ -1,4 +1,4 @@
-# n-puzzle
+# n-puzzle [[42](https://www.42.fr/) project]
 
 ## Project
 The goal of this project is to solve the N-puzzle ("taquin" in French) game using the A*
