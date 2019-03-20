@@ -1,5 +1,11 @@
 # n-puzzle
 
+## Project
+The goal of this project is to solve the N-puzzle ("taquin" in French) game using the A*
+search algorithm or one of its variants.
+
+See more on the [subject](https://github.com/tnicolas42/n-puzzle/blob/master/npuzzle.pdf).
+
 ## Generate puzzle
 To generate puzzle:
 ```bash
