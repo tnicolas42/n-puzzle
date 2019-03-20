@@ -1,5 +1,6 @@
 # n-puzzle
 
+## Generate puzzle
 To generate puzzle:
 ```bash
 python generator.py 3  # generate a puzzle of size 3*3
