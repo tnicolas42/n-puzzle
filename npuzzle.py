@@ -1,5 +1,8 @@
 import sys
+import srcs.global_var as g
+from srcs.generate_puzzle import generate_puzzle
 from srcs.parser import parse_from_file, parse
+from srcs.algo import a_star_algo
 
 
 if __name__ == "__main__":
@@ -18,5 +21,8 @@ if __name__ == "__main__":
         if puzzle is None:
             exit(1)
 
-    print(list(puzzle))
-    print(puzzle)
+    resolv_puzzle = generate_puzzle(puzzle.size)
+    total_sz = puzzle.size * puzzle.size
+    g.init_global(puzzle=resolv_puzzle, total_size_=total_sz)  # generate the resolved puzzle
+
+    a_star_algo(puzzle)
