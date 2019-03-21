@@ -1,14 +1,11 @@
 from srcs.generate_puzzle import generate_puzzle, spiral
 from srcs.puzzle import Puzzle
 
-def inversions(start, goal=None):
+def inversions(start):
     """
     An inversion is when a tile precedes another tile with a lower number on it
     The solution state has zero inversions
     """
-    if goal is None:
-        goal = generate_puzzle(start.size)
-
     _spiral = spiral(start.size, start)
 
     inversions = 0
@@ -25,7 +22,7 @@ def is_solvable(start, goal=None):
     if goal is None:
         goal = generate_puzzle(start.size)
 
-    start_inversions = inversions(start, goal)
+    start_inversions = inversions(start)
     goal_inversions = 0
 
     # In this case, the row of the '0' tile matters
