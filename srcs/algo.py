@@ -21,11 +21,14 @@ def get_total_dist(puzzle, heuristic_func):
 
 
 def get_min_puzzle_index(opened, heuristic_func):
+    """
+    get the "best" puzzle from opened list
+    """
     min_index = 0
-    min_dist = get_dist_form_start(opened[0])
+    min_dist = get_total_dist(opened[0], heuristic_func)
 
     for i in range(1, len(opened)):
-        dist = heuristic_func(opened[i])
+        dist = get_total_dist(opened[i], heuristic_func)
         if dist < min_dist:
             min_dist = dist
             min_index = i
@@ -34,6 +37,9 @@ def get_min_puzzle_index(opened, heuristic_func):
 
 
 def get_all_childs(puzzle):
+    """
+    get all childs from a puzzle
+    """
     childs = [
         copy.deepcopy(puzzle).move('T'),
         copy.deepcopy(puzzle).move('B'),
@@ -52,6 +58,8 @@ def get_all_childs(puzzle):
 
 def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
     """
+    it is the main function to solv the n-puzzle
+
     return a dict
     dict(
         max_opened -> max puzzle opened at the same time

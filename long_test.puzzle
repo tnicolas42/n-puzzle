@@ -7,3 +7,8 @@
 # time 4.09s user
 # max -> 536
 # total -> 1368
+
+# with the second algo (change get dist in get_total dist)
+# time 1.48s user
+# max -> 340
+# total -> 780
