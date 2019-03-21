@@ -3,7 +3,7 @@ from srcs.parser import parse_from_file
 
 PATH_VALID = 'test/valid/'
 PATH_INVALID = 'test/invalid/'
-FILES_INVALID_TO_TEST = ['/dev/null', 'filenotfound']
+FILES_INVALID_TO_TEST = ['/dev/null', 'filenotfound', '~/.Trashes']
 
 def test_valid():
     files_to_test = os.listdir(PATH_VALID)
