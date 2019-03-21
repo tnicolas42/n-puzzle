@@ -60,6 +60,10 @@ def parse(npuzzle_str):
 
 
 def parse_from_file(filename):
-    with open(filename, 'r') as f:
-        content = f.read()
+    try:
+        with open(filename, 'r') as f:
+            content = f.read()
+    except (PermissionError, FileNotFoundError):
+        print("[ERROR]: cannot read file %s" % (filename))
+        return None
     return parse(content)

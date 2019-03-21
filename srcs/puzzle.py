@@ -1,4 +1,9 @@
 class Puzzle(list):
+    """
+    puzzle format:
+        for 3*3 puzzle
+        [1, 2, 3, 8, 0, 4, 7, 6, 5]
+    """
     def __init__(self, size, puzzle, *args, **kwargs):
         list.__init__(self, *args, **kwargs)
 
@@ -9,7 +14,7 @@ class Puzzle(list):
         s = ''
         for i in range(self.size):
             for j in range(self.size):
-                s += "%-4d" % (self.get(i, j))
+                s += "%-3d " % (self.get(i, j))
             s += '\n'
         return s[:-1]
 
