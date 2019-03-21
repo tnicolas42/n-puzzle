@@ -1,4 +1,4 @@
-from puzzle import Puzzle
+from srcs.puzzle import Puzzle
 
 def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
     """
@@ -10,26 +10,26 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
         start_pos = [0, 0]
     if start_nb is None:
         start_nb = 1
-    
+
     puzzle = Puzzle(size, puzzle)
     nb = start_nb
 
     for i in range(size - 2 * start_pos[0]):
         puzzle.set(start_pos[0], start_pos[1] + i, nb)
         nb += 1
-    
+
     for i in range(size - 2 * start_pos[1] - 1):
         puzzle.set(start_pos[0] + i + 1, size - start_pos[1] - 1, nb)
         nb += 1
-        
+
     for i in range(size - 2 * start_pos[0] - 1):
         puzzle.set(size - start_pos[0] - 1, size - start_pos[1] - i - 2, nb)
         nb += 1
-        
+
     for i in range(size - 2 * start_pos[1] - 2):
         puzzle.set(size - start_pos[0] - i - 2, start_pos[1], nb)
         nb += 1
-    
+
     if start_pos[0] * 2 + 1 < size:
         start_pos[0] += 1
         start_pos[1] += 1
@@ -39,6 +39,7 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
         
     return puzzle
  
+
 def spiral(size, puzzle, start_pos=None, result=None):
     """
     reorder the puzzle array according to spiral:
