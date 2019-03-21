@@ -25,8 +25,10 @@ if __name__ == "__main__":
     total_sz = puzzle.size * puzzle.size
     g.init_global(puzzle=resolv_puzzle, total_size_=total_sz)  # generate the resolved puzzle
 
-    print(puzzle)
     result = a_star_algo(puzzle)
-    print(result.get_path())
-    print(result)
 
+    print(puzzle)
+    print(result['puzzle'].get_path())
+    print(result['puzzle'])
+    print('max opened at the same time: %d' % (result['max_opened']))
+    print('total opened: %d' % (result['total_opened']))

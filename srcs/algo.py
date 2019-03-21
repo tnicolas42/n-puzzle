@@ -51,10 +51,26 @@ def get_all_childs(puzzle):
 
 
 def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
+    """
+    return a dict
+    dict(
+        max_opened -> max puzzle opened at the same time
+        total_opened -> total puzzle opened
+        puzzle -> the last puzzle
+    )
+    """
     opened = [puzzle]
     closed = []
 
+    result = dict(
+        max_opened=0,
+        total_opened=1,
+        puzzle=None,
+    )
+
     while opened != []:
+        result['max_opened'] = max(result['max_opened'], len(opened))
+
         # get the puzzle with the min dist from start in opened
         used = get_min_puzzle_index(opened, heuristic_func)
         # put this node in closed
@@ -63,9 +79,11 @@ def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
         # get all childs of the selected path
         childs = get_all_childs(closed[-1])
         for child in childs:
+
             # check if it is finish
             if child == g.resolved_puzzle:
-                return child  # the algo is finished
+                result['puzzle'] = child
+                return result  # the algo is finished
 
             # look for child in opened or closed
             child_open_cpy = None  # index of a copy of child in opened (if exist)
@@ -81,6 +99,7 @@ def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
 
             if child_open_cpy == None and child_close_cpy == None:
                 opened.append(child)
+                result['total_opened'] += 1
             if child_open_cpy is not None and get_total_dist(opened[child_open_cpy], heuristic_func) > get_total_dist(child, heuristic_func):
                 opened[child_open_cpy] = child
             if child_close_cpy is not None and get_total_dist(closed[child_close_cpy], heuristic_func) > get_total_dist(child, heuristic_func):
