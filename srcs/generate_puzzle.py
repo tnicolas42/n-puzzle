@@ -36,9 +36,9 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
         puzzle = generate_puzzle(size, puzzle, start_pos, nb)
     else:
         puzzle.set(size//2, (size-1)//2, 0)
-        
+
     return puzzle
- 
+
 
 def spiral(size, puzzle, start_pos=None, result=None):
     """

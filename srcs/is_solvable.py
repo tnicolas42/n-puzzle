@@ -1,5 +1,5 @@
-from generate_puzzle import generate_puzzle, spiral
-from puzzle import Puzzle
+from srcs.generate_puzzle import generate_puzzle, spiral
+from srcs.puzzle import Puzzle
 
 def inversions(start, goal=None):
     """
