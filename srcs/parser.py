@@ -63,7 +63,7 @@ def parse_from_file(filename):
     try:
         with open(filename, 'r') as f:
             content = f.read()
-    except (PermissionError, FileNotFoundError):
+    except (PermissionError, FileNotFoundError, IsADirectoryError):
         print("[ERROR]: cannot read file %s" % (filename))
         return None
     return parse(content)
