@@ -15,19 +15,15 @@ def inversions(start):
                 inversions += 1 if (next < val and next != 0) else 0
     return inversions
 
-def is_solvable(start, goal=None):
+def is_solvable(start):
     """
-    Returns true if `start` belongs to the same permutation group as `goal`
-    """
-    if goal is None:
-        goal = generate_puzzle(start.size)
+    Definition: the polarity of a number is whether the number is even or odd.
 
+    Returns true if `start` belongs to the same permutation group as `goal`
+    Anny permutation result to the same polarity.
+    because anny permtation add -2 or +0 or +2 inversions
+    """
     start_inversions = inversions(start)
     goal_inversions = 0
-
-    # In this case, the row of the '0' tile matters
-    if start.size % 2 == 0:
-        start_inversions += start.index(0) / start.size
-        goal_inversions += goal.index(0) / start.size
 
     return int(start_inversions % 2) == int(goal_inversions % 2)
