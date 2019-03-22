@@ -1,5 +1,6 @@
 from srcs.generate_puzzle import generate_puzzle, spiral
-from srcs.puzzle import Puzzle
+from srcs.stats import get_stats
+
 
 def inversions(start, goal=None):
     """
@@ -14,10 +15,12 @@ def inversions(start, goal=None):
     inversions = 0
     for i, val in enumerate(_spiral):
         if val != 0:
-            for next in _spiral[i+1:]:
+            for next in _spiral[i + 1:]:
                 inversions += 1 if (next < val and next != 0) else 0
     return inversions
 
+
+@get_stats
 def is_solvable(start, goal=None):
     """
     Returns true if `start` belongs to the same permutation group as `goal`

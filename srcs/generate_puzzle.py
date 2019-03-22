@@ -1,11 +1,12 @@
 from srcs.puzzle import Puzzle
 
+
 def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
     """
     Generate a valid puzzle of given size
     """
     if puzzle is None:
-        puzzle = [0 for i in range(size*size)]
+        puzzle = [0 for i in range(size * size)]
     if start_pos is None:
         start_pos = [0, 0]
     if start_nb is None:
@@ -35,7 +36,7 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
         start_pos[1] += 1
         puzzle = generate_puzzle(size, puzzle, start_pos, nb)
     else:
-        puzzle.set(size//2, (size-1)//2, 0)
+        puzzle.set(size // 2, (size - 1) // 2, 0)
 
     return puzzle
 
@@ -69,6 +70,6 @@ def spiral(size, puzzle, start_pos=None, result=None):
         start_pos[1] += 1
         puzzle = spiral(size, puzzle, start_pos, result)
     else:
-        puzzle.set(size//2, (size-1)//2, 0)
+        puzzle.set(size // 2, (size - 1) // 2, 0)
 
     return result
