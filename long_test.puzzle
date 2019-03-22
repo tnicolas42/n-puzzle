@@ -12,3 +12,8 @@
 # time 1.48s user
 # max -> 340
 # total -> 780
+
+# save the dit_to_goal and update it in Puzzle foreach move
+# time 0.6s user
+# max -> 340
+# total -> 780

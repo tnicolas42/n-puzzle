@@ -3,32 +3,40 @@ import srcs.global_var as g
 
 
 def heuristic_manhattan(puzzle):
+    if puzzle.dist_to_goal is not None:  # if the distance are already calculated
+        return puzzle.dist_to_goal
     total = 0
     for i in range(g.total_size):
         total += puzzle.get_dist_from_goal(i)
+    puzzle.dist_to_goal = total
     return total
+
+
+heuristic_list = dict(  # list of all heuristic function
+    manhattan=heuristic_manhattan,
+)
 
 
 def get_dist_form_start(puzzle):
     return puzzle.dist_from_start
 
 
-def get_total_dist(puzzle, heuristic_func):
+def get_total_dist(puzzle, heuristic):
     """
     get dist from start + heuristic
     """
-    return get_dist_form_start(puzzle) + heuristic_func(puzzle)
+    return get_dist_form_start(puzzle) + heuristic_list[heuristic](puzzle)
 
 
-def get_min_puzzle_index(opened, heuristic_func):
+def get_min_puzzle_index(opened, heuristic):
     """
     get the "best" puzzle from opened list
     """
     min_index = 0
-    min_dist = get_total_dist(opened[0], heuristic_func)
+    min_dist = get_total_dist(opened[0], heuristic)
 
     for i in range(1, len(opened)):
-        dist = get_total_dist(opened[i], heuristic_func)
+        dist = get_total_dist(opened[i], heuristic)
         if dist < min_dist:
             min_dist = dist
             min_index = i
@@ -36,27 +44,26 @@ def get_min_puzzle_index(opened, heuristic_func):
     return min_index
 
 
-def get_all_childs(puzzle):
+def get_all_childs(puzzle, heuristic):
     """
     get all childs from a puzzle
     """
     childs = [
-        copy.deepcopy(puzzle).move('T'),
-        copy.deepcopy(puzzle).move('B'),
-        copy.deepcopy(puzzle).move('L'),
-        copy.deepcopy(puzzle).move('R'),
+        copy.deepcopy(puzzle).move('T', heuristic=heuristic),
+        copy.deepcopy(puzzle).move('B', heuristic=heuristic),
+        copy.deepcopy(puzzle).move('L', heuristic=heuristic),
+        copy.deepcopy(puzzle).move('R', heuristic=heuristic),
     ]
     for i in range(len(childs) - 1, -1, -1):
         if puzzle == childs[i]:
             childs.pop(i)
         else:
             # add a link to the parent
-            childs[i].set_parent(puzzle)
+            childs[i].init_child(parent=puzzle)
     return childs
 
 
-
-def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
+def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
     """
     it is the main function to solv the n-puzzle
 
@@ -80,12 +87,15 @@ def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
         result['max_opened'] = max(result['max_opened'], len(opened))
 
         # get the puzzle with the min dist from start in opened
-        used = get_min_puzzle_index(opened, heuristic_func)
+        used = get_min_puzzle_index(opened, heuristic)
         # put this node in closed
         closed.append(opened[used])
         opened.pop(used)
         # get all childs of the selected path
-        childs = get_all_childs(closed[-1])
+        if auto_update_heuristic:
+            childs = get_all_childs(closed[-1], heuristic=heuristic)
+        else:
+            childs = get_all_childs(closed[-1], heuristic=None)
         for child in childs:
 
             # check if it is finish
@@ -105,11 +115,16 @@ def a_star_algo(puzzle, heuristic_func=heuristic_manhattan):
                     child_close_cpy = i
                     break
 
-            if child_open_cpy == None and child_close_cpy == None:
+            if child_open_cpy is None and child_close_cpy is None:
                 opened.append(child)
                 result['total_opened'] += 1
-            if child_open_cpy is not None and get_total_dist(opened[child_open_cpy], heuristic_func) > get_total_dist(child, heuristic_func):
+
+            if child_open_cpy is not None and \
+               get_total_dist(opened[child_open_cpy], heuristic) > get_total_dist(child, heuristic):
                 opened[child_open_cpy] = child
-            if child_close_cpy is not None and get_total_dist(closed[child_close_cpy], heuristic_func) > get_total_dist(child, heuristic_func):
+
+            if child_close_cpy is not None and \
+               get_total_dist(closed[child_close_cpy], heuristic) > get_total_dist(child, heuristic):
                 closed[child_close_cpy] = child
+
     return None  # the resolution is impossible

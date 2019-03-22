@@ -6,6 +6,12 @@ from srcs.is_solvable import is_solvable
 from srcs.algo import a_star_algo
 
 
+param = dict(
+    heuristic='manhattan',
+    auto_update_heuristic=True,
+)
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         puzzle = parse_from_file(sys.argv[1])
@@ -31,7 +37,7 @@ if __name__ == "__main__":
     total_sz = puzzle.size * puzzle.size
     g.init_global(puzzle=resolv_puzzle, total_size_=total_sz)  # generate the resolved puzzle
 
-    result = a_star_algo(puzzle)
+    result = a_star_algo(puzzle, **param)
 
     print(puzzle)
     print(result['puzzle'].get_path())
