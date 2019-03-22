@@ -1,4 +1,5 @@
 import srcs.global_var as g
+from srcs.stats import get_stats
 
 
 class Puzzle(list):
@@ -18,6 +19,9 @@ class Puzzle(list):
         # saved info to avoid useless calcul
         self.dist_from_start = 0
         self.dist_to_goal = None
+        # position of 0 in the list (x, y)
+        idx = self.index(0)
+        self.pos0xy = [idx // self.size, idx % self.size]
 
     def init_child(self, parent):
         self.parent = parent
@@ -36,6 +40,7 @@ class Puzzle(list):
     def set(self, x, y, val):
         self[x * self.size + y % self.size] = val
 
+    @get_stats
     def get_dist_from_goal(self, x, y=None):
         """
         take an index in argument and return his distance to the goal
@@ -80,6 +85,11 @@ class Puzzle(list):
         self.set(x1, y1, self.get(x2, y2))
         self.set(x2, y2, tmp)
 
+        if self.get(x1, y1) == 0:
+            self.pos0xy = [x1, y1]
+        elif self.get(x2, y2) == 0:
+            self.pos0xy = [x2, y2]
+
         if heuristic is not None and self.dist_to_goal is not None:
             if heuristic == 'manhattan':
                 # get the distance to goal for the 2 swapped point
@@ -88,6 +98,7 @@ class Puzzle(list):
                 self.dist_to_goal = self.dist_to_goal - last_dist + new_dist
         return True
 
+    @get_stats
     def move(self, direction, heuristic=None):
         """
         if heuristic is None -> dont update total dist
@@ -97,9 +108,12 @@ class Puzzle(list):
             - L(eft)
             - R(ight)
         """
-        idx = self.index(0)
-        x = idx // self.size
-        y = idx % self.size
+        if self.pos0xy is None:
+            idx = self.index(0)
+            self.pos0xy = [idx // self.size, idx % self.size]
+
+        x = self.pos0xy[0]
+        y = self.pos0xy[1]
         if direction == 'T':
             self.swap(x, y, x-1, y, heuristic=heuristic)
         elif direction == 'B':
@@ -115,6 +129,9 @@ class Puzzle(list):
         return self
 
     def get_path(self):
+        """
+        get the entire path (LLTRBL...)
+        """
         if self.parent is None:
             return ""
         return self.parent.get_path() + self.last_move

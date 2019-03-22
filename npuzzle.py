@@ -3,6 +3,7 @@ import srcs.global_var as g
 from srcs.generate_puzzle import generate_puzzle
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
+from srcs.stats import print_stats
 from srcs.algo import a_star_algo
 
 
@@ -44,3 +45,4 @@ if __name__ == "__main__":
     print(result['puzzle'])
     print('max opened at the same time: %d' % (result['max_opened']))
     print('total opened: %d' % (result['total_opened']))
+    print_stats()

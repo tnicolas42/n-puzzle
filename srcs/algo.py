@@ -1,5 +1,6 @@
 import copy
 import srcs.global_var as g
+from srcs.stats import get_stats
 
 
 def heuristic_manhattan(puzzle):
@@ -21,6 +22,7 @@ def get_dist_form_start(puzzle):
     return puzzle.dist_from_start
 
 
+@get_stats
 def get_total_dist(puzzle, heuristic):
     """
     get dist from start + heuristic
@@ -28,6 +30,7 @@ def get_total_dist(puzzle, heuristic):
     return get_dist_form_start(puzzle) + heuristic_list[heuristic](puzzle)
 
 
+@get_stats
 def get_min_puzzle_index(opened, heuristic):
     """
     get the "best" puzzle from opened list
@@ -48,18 +51,20 @@ def get_all_childs(puzzle, heuristic):
     """
     get all childs from a puzzle
     """
-    childs = [
-        copy.deepcopy(puzzle).move('T', heuristic=heuristic),
-        copy.deepcopy(puzzle).move('B', heuristic=heuristic),
-        copy.deepcopy(puzzle).move('L', heuristic=heuristic),
-        copy.deepcopy(puzzle).move('R', heuristic=heuristic),
-    ]
+    childs = []
+
+    # create child only with specifics confitions
+    if puzzle.last_move is not 'B' and puzzle.pos0xy[0] > 0:
+        childs.append(copy.deepcopy(puzzle).move('T', heuristic=heuristic))
+    if puzzle.last_move is not 'T' and puzzle.pos0xy[0] < puzzle.size - 1:
+        childs.append(copy.deepcopy(puzzle).move('B', heuristic=heuristic))
+    if puzzle.last_move is not 'R' and puzzle.pos0xy[1] > 0:
+        childs.append(copy.deepcopy(puzzle).move('L', heuristic=heuristic))
+    if puzzle.last_move is not 'L' and puzzle.pos0xy[1] < puzzle.size - 1:
+        childs.append(copy.deepcopy(puzzle).move('R', heuristic=heuristic))
+
     for i in range(len(childs) - 1, -1, -1):
-        if puzzle == childs[i]:
-            childs.pop(i)
-        else:
-            # add a link to the parent
-            childs[i].init_child(parent=puzzle)
+        childs[i].init_child(parent=puzzle)
     return childs
 
 
@@ -96,6 +101,7 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
             childs = get_all_childs(closed[-1], heuristic=heuristic)
         else:
             childs = get_all_childs(closed[-1], heuristic=None)
+
         for child in childs:
 
             # check if it is finish
