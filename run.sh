@@ -3,4 +3,5 @@
 python generator.py $@ > tmp.puzzle
 cat tmp.puzzle
 echo "=============="
-python3 npuzzle.py tmp.puzzle
+time python3 npuzzle.py tmp.puzzle
+rm tmp.puzzle
