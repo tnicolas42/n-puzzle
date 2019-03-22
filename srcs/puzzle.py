@@ -115,13 +115,13 @@ class Puzzle(list):
         x = self.pos0xy[0]
         y = self.pos0xy[1]
         if direction == 'T':
-            self.swap(x, y, x-1, y, heuristic=heuristic)
+            self.swap(x, y, x - 1, y, heuristic=heuristic)
         elif direction == 'B':
-            self.swap(x, y, x+1, y, heuristic=heuristic)
+            self.swap(x, y, x + 1, y, heuristic=heuristic)
         elif direction == 'L':
-            self.swap(x, y, x, y-1, heuristic=heuristic)
+            self.swap(x, y, x, y - 1, heuristic=heuristic)
         elif direction == 'R':
-            self.swap(x, y, x, y+1, heuristic=heuristic)
+            self.swap(x, y, x, y + 1, heuristic=heuristic)
         else:
             print("[ERROR]: invalid move")
         self.last_move = direction

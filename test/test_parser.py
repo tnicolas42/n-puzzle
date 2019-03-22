@@ -5,6 +5,7 @@ PATH_VALID = 'test/valid/'
 PATH_INVALID = 'test/invalid/'
 FILES_INVALID_TO_TEST = ['/dev/null', 'filenotfound', '~/.Trashes', '/']
 
+
 def test_valid():
     files_to_test = os.listdir(PATH_VALID)
     for f in files_to_test:
@@ -14,6 +15,7 @@ def test_valid():
             if puzzle is None:
                 raise Exception("puzzle is None with a valid file (%s)" % (f))
             print("check with %s -> OK" % (f))
+
 
 def test_invalid():
     files_to_test = os.listdir(PATH_INVALID)

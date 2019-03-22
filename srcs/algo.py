@@ -68,6 +68,7 @@ def get_all_childs(puzzle, heuristic):
     return childs
 
 
+@get_stats
 def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
     """
     it is the main function to solv the n-puzzle
