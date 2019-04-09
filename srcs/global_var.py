@@ -1,4 +1,4 @@
-!#/usr/bin/python3
+#!/usr/bin/python3
 
 
 def init_global(puzzle, total_size_):
