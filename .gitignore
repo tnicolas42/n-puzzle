@@ -107,3 +107,5 @@ venv.bak/
 .DS_Store
 *.vim
 *.swp
+.vscode/
+tmp.puzzle
