@@ -1,3 +1,4 @@
+!#/usr/bin/python3
 from srcs.generate_puzzle import generate_puzzle, spiral
 from srcs.stats import get_stats
 

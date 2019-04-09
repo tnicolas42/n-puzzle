@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+!#/usr/bin/python3
 import sys
 import srcs.global_var as g
 from srcs.generate_puzzle import generate_puzzle
