@@ -32,7 +32,7 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
         puzzle.set(size - start_pos[0] - i - 2, start_pos[1], nb)
         nb += 1
 
-    if start_pos[0] * 2 + 1 < size:
+    if (start_pos[0] + 1) * 2 + 1 < size:
         start_pos[0] += 1
         start_pos[1] += 1
         puzzle = generate_puzzle(size, puzzle, start_pos, nb)

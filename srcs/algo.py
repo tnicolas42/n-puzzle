@@ -113,15 +113,16 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
 
             # look for child in opened or closed
             child_open_cpy = None  # index of a copy of child in opened (if exist)
-            for i in range(len(opened)):
-                if opened[i] == child:
-                    child_open_cpy = i
-                    break
+            try:
+                child_open_cpy = opened.index(child)
+            except ValueError:
+                pass
             child_close_cpy = None  # index of a copy of child in closed (if exist)
-            for i in range(len(closed)):
-                if closed[i] == child:
-                    child_close_cpy = i
-                    break
+            if child_open_cpy is None:
+                try:
+                    child_close_cpy = closed.index(child)
+                except ValueError:
+                    pass
 
             if child_open_cpy is None and child_close_cpy is None:
                 opened.append(child)
