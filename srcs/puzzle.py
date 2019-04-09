@@ -1,3 +1,4 @@
+!#/usr/bin/python3
 import srcs.global_var as g
 from srcs.stats import get_stats
 

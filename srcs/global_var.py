@@ -1,3 +1,6 @@
+!#/usr/bin/python3
+
+
 def init_global(puzzle, total_size_):
     """
     init some global variables
