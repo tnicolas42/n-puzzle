@@ -1,38 +1,36 @@
 #!/usr/bin/python3
 import time
 
-enable_stats = True
-stats = None
+class EnableStats:
+    enable = False
+    stats = None
 
 
 def get_stats(function):
-    global stats
-    global enable_stats
-    if enable_stats:
-        if stats is None:
-            stats = dict()
-        stats[function.__name__] = dict(
-            module=function.__module__,
-            nb_call=0,
-            total_time=0,
-        )
+    if EnableStats.stats is None:
+        EnableStats.stats = dict()
+    EnableStats.stats[function.__name__] = dict(
+        module=function.__module__,
+        nb_call=0,
+        total_time=0,
+    )
 
     def decorator(*args, **kwargs):
-        if not enable_stats:
+        if not EnableStats.enable:
             return function(*args, **kwargs)
-        stats[function.__name__]['nb_call'] += 1
+        EnableStats.stats[function.__name__]['nb_call'] += 1
         time_start = time.time()
         ret = function(*args, **kwargs)
-        stats[function.__name__]['total_time'] += time.time() - time_start
+        EnableStats.stats[function.__name__]['total_time'] += time.time() - time_start
         return ret
     return decorator
 
 
 def print_stats():
-    if stats is None:
+    if EnableStats.stats is None or not EnableStats.enable:
         return
-    for key in stats:
-        val = stats[key]
+    for key in EnableStats.stats:
+        val = EnableStats.stats[key]
         print('%s.py -> %s():' % (val['module'], key))
         print('\tfunction called %d times' % (val['nb_call']))
         if val['nb_call'] > 0:

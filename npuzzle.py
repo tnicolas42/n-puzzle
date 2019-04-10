@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 import sys
+import argparse
 import srcs.global_var as g
 from srcs.generate_puzzle import generate_puzzle
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
-from srcs.stats import print_stats
+from srcs.stats import print_stats, EnableStats
 from srcs.algo import a_star_algo
 
+admissible_heuristics = ('manhattan', 'hamming')
 
 param = dict(
     heuristic='manhattan',
@@ -15,18 +17,24 @@ param = dict(
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        puzzle = parse_from_file(sys.argv[1])
-        if puzzle is None:
-            exit(1)
-    elif len(sys.argv) > 2:
-        print("usage:\n"
-              "python3 npuzzle.py <file>"
-              "cat <file> | python3 npuzzle.py")
-        exit(1)
-    else:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("puzzle", type=str, default="", nargs='?',
+                        help="The file that contain the puzzle")
+    parser.add_argument("--heuristic", type=str, default="manhattan", choices=admissible_heuristics,
+                        help="This is the heuristic function")
+    parser.add_argument("--stats", action="store_true", default=False,
+                        help="Print stats about functions [for debug]")
+    args = parser.parse_args()
+
+    EnableStats.enable = args.stats
+
+    if args.puzzle == "":
         data = "".join(sys.stdin.readlines())
         puzzle = parse(data)
+        if puzzle is None:
+            exit(1)
+    else:
+        puzzle = parse_from_file(sys.argv[1])
         if puzzle is None:
             exit(1)
 

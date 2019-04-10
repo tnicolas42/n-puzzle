@@ -17,7 +17,6 @@ def inversions(start):
                 inversions += 1 if (next < val and next != 0) else 0
     return inversions
 
-@get_stats
 def is_solvable(start):
     """
     Definition: the polarity of a number is whether the number is even or odd.
