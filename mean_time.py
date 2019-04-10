@@ -5,6 +5,14 @@ import sys
 import argparse
 import subprocess
 
+"""
+python3 mean_time.py <size> [--path DIR_WITH_TESTS] [--heuristic HEURISTIC]
+>>> python3 mean_time.py 3 --heuristic=manhattan
+>>> python3 mean_time.py 3
+>>> python3 mean_time.py 3 --heuristic=manhattan --path test/all_tests
+"""
+
+
 base = "/".join(sys.argv[0].split('/')[:-1])
 if base == "":
     base = "./"
