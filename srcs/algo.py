@@ -18,13 +18,6 @@ heuristic_list = dict(  # list of all heuristic function
     manhattan=heuristic_manhattan,
 )
 
-@get_stats
-def get_total_dist(puzzle, heuristic):
-    """
-    get dist from start + heuristic
-    """
-    return puzzle.dist_from_start + puzzle.dist_to_goal
-
 
 def get_all_childs(puzzle, heuristic):
     """
@@ -105,13 +98,11 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
                 heappush(opened, child)
                 result['total_opened'] += 1
 
-            if child_open_cpy is not None and \
-               get_total_dist(opened[child_open_cpy], heuristic) > get_total_dist(child, heuristic):
+            if child_open_cpy is not None and opened[child_open_cpy] > child:
                 opened[child_open_cpy] = child
                 heapify(opened) # heapify because we have changed element value
 
-            if child_close_cpy is not None and \
-               get_total_dist(closed[child.hash], heuristic) > get_total_dist(child, heuristic):
+            if child_close_cpy is not None and closed[child.hash] > child:
                 closed[child.hash] = child
 
     return None  # the resolution is impossible

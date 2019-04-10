@@ -142,7 +142,12 @@ class Puzzle(list):
             return ""
         return self.parent.get_path() + self.last_move
 
-    # compare function
+    # compare function <
     def __lt__(self, other):
         return (self.dist_from_start + (self.dist_to_goal if self.dist_to_goal is not None else 0)) < \
+            (other.dist_from_start + (other.dist_to_goal if other.dist_to_goal is not None else 0))
+
+    # compare function >
+    def __ge__(self, other):
+        return (self.dist_from_start + (self.dist_to_goal if self.dist_to_goal is not None else 0)) > \
             (other.dist_from_start + (other.dist_to_goal if other.dist_to_goal is not None else 0))
