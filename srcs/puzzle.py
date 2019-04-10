@@ -14,6 +14,7 @@ class Puzzle(list):
 
         self.size = size
         self.extend(puzzle)
+        self.hash = hash(str(list(self)))
         self.parent = None  # None only for the base puzzle
         self.last_move = None
 
@@ -40,6 +41,9 @@ class Puzzle(list):
 
     def set(self, x, y, val):
         self[x * self.size + y % self.size] = val
+
+    def updtHash(self):
+        self.hash = hash(str(list(self)))
 
     @get_stats
     def get_dist_from_goal(self, x, y=None):
@@ -127,6 +131,7 @@ class Puzzle(list):
             print("[ERROR]: invalid move")
         self.last_move = direction
         self.dist_from_start += 1
+        self.hash = hash(str(list(self)))
         return self
 
     def get_path(self):

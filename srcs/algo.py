@@ -82,7 +82,7 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
     )
     """
     opened = [puzzle]
-    closed = []
+    closed = dict()
 
     result = dict(
         max_opened=0,
@@ -96,13 +96,14 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
         # get the puzzle with the min dist from start in opened
         used = get_min_puzzle_index(opened, heuristic)
         # put this node in closed
-        closed.append(opened[used])
+        closed[opened[used].hash] = opened[used]
+        lastUsed = opened[used]
         opened.pop(used)
         # get all childs of the selected path
         if auto_update_heuristic:
-            childs = get_all_childs(closed[-1], heuristic=heuristic)
+            childs = get_all_childs(lastUsed, heuristic=heuristic)
         else:
-            childs = get_all_childs(closed[-1], heuristic=None)
+            childs = get_all_childs(lastUsed, heuristic=None)
 
         for child in childs:
 
@@ -119,10 +120,8 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
                 pass
             child_close_cpy = None  # index of a copy of child in closed (if exist)
             if child_open_cpy is None:
-                try:
-                    child_close_cpy = closed.index(child)
-                except ValueError:
-                    pass
+                if child.hash in closed:
+                    child_close_cpy = child
 
             if child_open_cpy is None and child_close_cpy is None:
                 opened.append(child)
@@ -133,7 +132,7 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
                 opened[child_open_cpy] = child
 
             if child_close_cpy is not None and \
-               get_total_dist(closed[child_close_cpy], heuristic) > get_total_dist(child, heuristic):
-                closed[child_close_cpy] = child
+               get_total_dist(closed[child.hash], heuristic) > get_total_dist(child, heuristic):
+                closed[child.hash] = child
 
     return None  # the resolution is impossible
