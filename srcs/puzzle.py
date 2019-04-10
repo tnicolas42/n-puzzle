@@ -54,12 +54,12 @@ class Puzzle(list):
         else:
             index = x * self.size + y % self.size
         val = self[index]
-        if val == g.resolved_puzzle[index]:
+        if val == g.resolved_puzzle[index] or val == 0:
             return 0  # is is well placed
 
         res_val = g.resolved_puzzle.index(val)
 
-        # dist = abs(x - goal_x) + abs(y - gaol_y)
+        # abs(x - goal_x) + abs(y - goal_y)
         dist = abs(index // self.size - res_val // self.size) + abs(index % self.size - res_val % self.size)
         return dist
 
@@ -68,7 +68,7 @@ class Puzzle(list):
             index = x
         else:
             index = x * self.size + y % self.size
-        if g.resolved_puzzle[index] == self[index]:
+        if g.resolved_puzzle[index] == self[index] or self[index] == 0:
             return True
         return False
 
