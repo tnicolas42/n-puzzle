@@ -1,6 +1,19 @@
 #!/usr/bin/python3
 import time
 
+"""
+Get stats on functions (nb time called, total exec time, mean exec time, ...)
+To add stats on a funcion, just add a decorator get_stats:
+>>> @get_stats
+... def function():
+...     pass
+At the end of your prgm, print all the stats with the function print_stats()
+>>> print_stats()
+To enable/disable stats, change the value of EnableStats.stats
+>>> EnableStats.stats = True
+"""
+
+
 class EnableStats:
     enable = False
     stats = None
