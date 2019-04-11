@@ -6,7 +6,7 @@ from srcs.generate_puzzle import generate_puzzle
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
 from srcs.stats import print_stats, EnableStats
-from srcs.algo import a_star_algo
+from srcs.algo import a_star_algo, heuristic_list
 
 admissible_heuristics = ('manhattan', 'hamming')
 
@@ -46,7 +46,9 @@ if __name__ == "__main__":
     resolv_puzzle = generate_puzzle(puzzle.size)
     total_sz = puzzle.size * puzzle.size
     g.init_global(puzzle=resolv_puzzle, total_size_=total_sz)  # generate the resolved puzzle
+    param['heuristic'] = args.heuristic
 
+    heuristic_list[param['heuristic']](puzzle)
     result = a_star_algo(puzzle, **param)
 
     print(puzzle)
