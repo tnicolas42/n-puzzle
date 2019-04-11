@@ -147,7 +147,17 @@ class Puzzle(list):
         return (self.dist_from_start + (self.dist_to_goal if self.dist_to_goal is not None else 0)) < \
             (other.dist_from_start + (other.dist_to_goal if other.dist_to_goal is not None else 0))
 
-    # compare function >
+    # compare function <=
+    def __le__(self, other):
+        return (self.dist_from_start + (self.dist_to_goal if self.dist_to_goal is not none else 0)) <= \
+            (other.dist_from_start + (other.dist_to_goal if other.dist_to_goal is not none else 0))
+
+    # compare function >=
     def __ge__(self, other):
+        return (self.dist_from_start + (self.dist_to_goal if self.dist_to_goal is not None else 0)) >= \
+            (other.dist_from_start + (other.dist_to_goal if other.dist_to_goal is not None else 0))
+
+    # compare function >
+    def __gt__(self, other):
         return (self.dist_from_start + (self.dist_to_goal if self.dist_to_goal is not None else 0)) > \
             (other.dist_from_start + (other.dist_to_goal if other.dist_to_goal is not None else 0))

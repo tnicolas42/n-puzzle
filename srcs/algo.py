@@ -98,11 +98,11 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
                 heappush(opened, child)
                 result['total_opened'] += 1
 
-            if child_open_cpy is not None and opened[child_open_cpy] > child:
+            if child_open_cpy is not None and opened[child_open_cpy] >= child:
                 opened[child_open_cpy] = child
                 heapify(opened) # heapify because we have changed element value
 
-            if child_close_cpy is not None and closed[child.hash] > child:
+            if child_close_cpy is not None and closed[child.hash] >= child:
                 closed[child.hash] = child
 
     return None  # the resolution is impossible
