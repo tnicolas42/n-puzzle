@@ -42,9 +42,17 @@ def heuristic_linear_conflict(puzzle):
     puzzle.dist_to_goal = heuristic_manhattan(puzzle) + inversions * 2
     return puzzle.dist_to_goal
 
+def heuristic_uniform_cost(puzzle):
+    """
+    always return the same cost
+    this is to run the dijkstra algoritm
+    """
+    return 0
+
 
 heuristic_list = dict(  # list of all heuristic function
     manhattan=heuristic_manhattan,
     hamming=heuristic_hamming,
     linear_conflict=heuristic_linear_conflict,
+    uniform_cost=heuristic_uniform_cost,
 )
