@@ -8,7 +8,7 @@ from srcs.is_solvable import is_solvable
 from srcs.stats import print_stats, EnableStats
 from srcs.algo import a_star_algo, heuristic_list
 
-admissible_heuristics = ('manhattan', 'hamming')
+admissible_heuristics = ('manhattan', 'hamming', 'linear_conflict')
 
 param = dict(
     heuristic='manhattan',
@@ -50,6 +50,11 @@ if __name__ == "__main__":
 
     heuristic_list[param['heuristic']](puzzle)
     result = a_star_algo(puzzle, **param)
+
+    if not result:
+        print("after trying to resolve it, this npuzzle is unsolvable")
+        print(puzzle)
+        exit(1)
 
     print(puzzle)
     print(result['puzzle'].get_path())
