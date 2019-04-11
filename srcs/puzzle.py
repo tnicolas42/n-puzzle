@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import srcs.global_var as g
 from srcs.stats import get_stats
+from srcs.heuristics import heuristic_list
 
 
 class Puzzle(list):
@@ -9,7 +10,7 @@ class Puzzle(list):
         for 3*3 puzzle
         [1, 2, 3, 8, 0, 4, 7, 6, 5]
     """
-    def __init__(self, size, puzzle, *args, **kwargs):
+    def __init__(self, size, puzzle, _heuristic=None, *args, **kwargs):
         list.__init__(self, *args, **kwargs)
 
         self.size = size
@@ -19,14 +20,17 @@ class Puzzle(list):
         self.last_move = None
 
         # saved info to avoid useless calcul
+        self.heuristic = _heuristic
         self.dist_from_start = 0
+        self.dist_manhattan = None
         self.dist_to_goal = None
         # position of 0 in the list (x, y)
         idx = self.index(0)
         self.pos0xy = [idx // self.size, idx % self.size]
 
-    def init_child(self, parent):
+    def init_child(self, parent, _heuristic):
         self.parent = parent
+        self.heuristic = _heuristic
 
     def __str__(self):
         s = ''
@@ -39,6 +43,11 @@ class Puzzle(list):
                     s += "%-3d " % (self.get(i, j))
             s += '\n'
         return s[:-1]
+
+    def calc_heuristic(self, _heuristic=None):
+        if _heuristic is not None:
+            self.heuristic = _heuristic
+        heuristic_list[self.heuristic](self)
 
     def get(self, x, y):
         return self[x * self.size + y % self.size]
@@ -76,7 +85,35 @@ class Puzzle(list):
             return True
         return False
 
-    def swap(self, x1, y1, x2, y2, heuristic=None):
+    def is_in_line(self, x, y=None):
+        """
+        if the element is in the right line, return his position
+        """
+        if y is None:
+            y = x % self.size
+            x = x // self.size
+
+        val = self.get(x, y)
+        for i in range(self.size):
+            if g.resolved_puzzle.get(x, i) == val:
+                return (x, i)
+        return None
+
+    def is_in_column(self, x, y=None):
+        """
+        if the element is in the right column, return his position
+        """
+        if y is None:
+            y = x % self.size
+            x = x // self.size
+
+        val = self.get(x, y)
+        for i in range(self.size):
+            if g.resolved_puzzle.get(i, y) == val:
+                return (i, y)
+        return None
+
+    def swap(self, x1, y1, x2, y2, auto_update=True):
         """
         if heuristic == None -> don't update total dist
         swap 2 values
@@ -86,18 +123,12 @@ class Puzzle(list):
         if min(x1, x2) < 0 or max(x1, x2) >= self.size or min(y1, y2) < 0 or max(y1, y2) >= self.size:
             return False
 
-        if heuristic is None or self.dist_to_goal is None:
-            # reset the dist to goal
-            self.dist_to_goal = None
-        else:
-            if heuristic == 'manhattan':
+        if auto_update:
+            if self.heuristic == 'manhattan' and self.dist_manhattan is not None:
                 # get the distance to goal for the 2 swapped point
                 last_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
-            elif heuristic == 'hamming':
+            elif self.heuristic == 'hamming' and self.dist_to_goal is not None:
                 last_dist = int(not self.is_well_placed(x1, y1)) + int(not self.is_well_placed(x2, y2))
-            else:
-                # reset the dist to goal
-                self.dist_to_goal = None
 
         tmp = self.get(x1, y1)
         self.set(x1, y1, self.get(x2, y2))
@@ -108,20 +139,29 @@ class Puzzle(list):
         elif self.get(x2, y2) == 0:
             self.pos0xy = [x2, y2]
 
-        if heuristic is not None and self.dist_to_goal is not None:
-            if heuristic == 'manhattan':
+        if auto_update:
+            if self.heuristic == 'manhattan' and self.dist_manhattan is not None:
                 # get the distance to goal for the 2 swapped point
                 new_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
                 # update dist to goal
-                self.dist_to_goal = self.dist_to_goal - last_dist + new_dist
-            elif heuristic == 'hamming':
+                self.dist_manhattan = self.dist_manhattan - last_dist + new_dist
+                self.dist_to_goal = self.dist_manhattan
+            elif self.heuristic == 'hamming' and self.dist_to_goal is not None:
                 new_dist = int(not self.is_well_placed(x1, y1)) + int(not self.is_well_placed(x2, y2))
                 self.dist_to_goal = self.dist_to_goal - last_dist + new_dist
+            else:
+                self.dist_to_goal = None
+                self.dist_manhattan = None
+                self.calc_heuristic()
+        else:
+            self.dist_to_goal = None
+            self.dist_manhattan = None
+            self.calc_heuristic()
 
         return True
 
     @get_stats
-    def move(self, direction, heuristic=None):
+    def move(self, direction, auto_update=True):
         """
         if heuristic is None -> dont update total dist
         move in one direction
@@ -137,13 +177,13 @@ class Puzzle(list):
         x = self.pos0xy[0]
         y = self.pos0xy[1]
         if direction == 'T':
-            self.swap(x, y, x - 1, y, heuristic=heuristic)
+            self.swap(x, y, x - 1, y, auto_update=auto_update)
         elif direction == 'B':
-            self.swap(x, y, x + 1, y, heuristic=heuristic)
+            self.swap(x, y, x + 1, y, auto_update=auto_update)
         elif direction == 'L':
-            self.swap(x, y, x, y - 1, heuristic=heuristic)
+            self.swap(x, y, x, y - 1, auto_update=auto_update)
         elif direction == 'R':
-            self.swap(x, y, x, y + 1, heuristic=heuristic)
+            self.swap(x, y, x, y + 1, auto_update=auto_update)
         else:
             print("[ERROR]: invalid move")
         self.last_move = direction

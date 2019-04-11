@@ -49,6 +49,7 @@ if __name__ == "__main__":
     param['heuristic'] = args.heuristic
 
     heuristic_list[param['heuristic']](puzzle)
+    puzzle.calc_heuristic(param['heuristic'])
     result = a_star_algo(puzzle, **param)
 
     if not result:
