@@ -5,6 +5,14 @@ import sys
 import argparse
 import subprocess
 
+"""
+python3 mean_time.py <size> [--path DIR_WITH_TESTS] [--heuristic HEURISTIC]
+>>> python3 mean_time.py 3 --heuristic=manhattan
+>>> python3 mean_time.py 3
+>>> python3 mean_time.py 3 --heuristic=manhattan --path test/all_tests
+"""
+
+
 base = "/".join(sys.argv[0].split('/')[:-1])
 if base == "":
     base = "./"
@@ -18,6 +26,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("size", type=int, help="Size of the puzzle -> must be > 3")
     parser.add_argument("--path", type=str, default=PATH_TEST, help="the folder with examples")
+    parser.add_argument("--heuristic", type=str, default="manhattan",
+                        help="This is the heuristic function")
     args = parser.parse_args()
 
     size_test = args.size
@@ -27,7 +37,8 @@ if __name__ == "__main__":
     files_to_test = os.listdir(PATH_TEST)
     for file in files_to_test:
         if re.match(r'.*' + str(size_test) + '\.\d*\.puzzle', file):
-            command = GET_TIME + " " + PATH_TEST + '/' + file + " " + (base if base is not "./" else "")
+            command = GET_TIME + " " + PATH_TEST + '/' + file + " " + (base if base is not "./" else "") + \
+                      "npuzzle.py '--heuristic=" + args.heuristic + "'"
             p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
             (output, err) = p.communicate()
             output = output.decode("utf-8").strip()

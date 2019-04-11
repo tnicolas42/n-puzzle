@@ -32,7 +32,11 @@ class Puzzle(list):
         s = ''
         for i in range(self.size):
             for j in range(self.size):
-                s += "%-3d " % (self.get(i, j))
+                nb = self.get(i, j)
+                if nb == 0:
+                    s += "%4s" % ("")
+                else:
+                    s += "%-3d " % (self.get(i, j))
             s += '\n'
         return s[:-1]
 
@@ -45,7 +49,6 @@ class Puzzle(list):
     def updtHash(self):
         self.hash = hash(str(list(self)))
 
-    @get_stats
     def get_dist_from_goal(self, x, y=None):
         """
         take an index in argument and return his distance to the goal
@@ -55,14 +58,23 @@ class Puzzle(list):
         else:
             index = x * self.size + y % self.size
         val = self[index]
-        if val == g.resolved_puzzle[index]:
+        if val == g.resolved_puzzle[index] or val == 0:
             return 0  # is is well placed
 
         res_val = g.resolved_puzzle.index(val)
 
-        # dist = abs(x - goal_x) + abs(y - gaol_y)
+        # abs(x - goal_x) + abs(y - goal_y)
         dist = abs(index // self.size - res_val // self.size) + abs(index % self.size - res_val % self.size)
         return dist
+
+    def is_well_placed(self, x, y=None):
+        if y is None:
+            index = x
+        else:
+            index = x * self.size + y % self.size
+        if g.resolved_puzzle[index] == self[index] or self[index] == 0:
+            return True
+        return False
 
     def swap(self, x1, y1, x2, y2, heuristic=None):
         """
@@ -81,8 +93,9 @@ class Puzzle(list):
             if heuristic == 'manhattan':
                 # get the distance to goal for the 2 swapped point
                 last_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
+            elif heuristic == 'hamming':
+                last_dist = int(not self.is_well_placed(x1, y1)) + int(not self.is_well_placed(x2, y2))
             else:
-                print("cannot update total_dist with heuristic %s" % heuristic)
                 # reset the dist to goal
                 self.dist_to_goal = None
 
@@ -101,6 +114,10 @@ class Puzzle(list):
                 new_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
                 # update dist to goal
                 self.dist_to_goal = self.dist_to_goal - last_dist + new_dist
+            elif heuristic == 'hamming':
+                new_dist = int(not self.is_well_placed(x1, y1)) + int(not self.is_well_placed(x2, y2))
+                self.dist_to_goal = self.dist_to_goal - last_dist + new_dist
+
         return True
 
     @get_stats
