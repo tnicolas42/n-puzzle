@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import srcs.global_var as g
+from srcs.stats import get_stats
+
 
 def heuristic_manhattan(puzzle):
     """
@@ -27,35 +29,16 @@ def heuristic_hamming(puzzle):
     puzzle.dist_to_goal = total
     return total
 
-
 def heuristic_linear_conflict(puzzle):
     """
     reuturn the manhattan distance + the number of linear conflicts * 2
     """
+    if puzzle.dist_manhattan is not None and puzzle.dist_to_goal is not None:
+        return puzzle.dist_to_goal
     inversions = 0
     for x1 in range(puzzle.size):
         for y1 in range(puzzle.size):
-            if puzzle.get(x1, y1) != 0:
-                pos_col = puzzle.is_in_column(x1, y1)
-                if pos_col:
-                    list_upper = []  # list of all elements upper
-                    for x2 in range(pos_col[0]):
-                        list_upper.append(g.resolved_puzzle.get(x2, y1))
-                    for x2 in range(x1+1, puzzle.size):
-                        if puzzle.get(x2, y1) != 0:
-                            if puzzle.get(x2, y1) in list_upper:
-                                inversions += 1
-
-                pos_ln = puzzle.is_in_line(x1, y1)
-                if pos_ln:
-                    list_upper = []  # list of all elements upper
-                    for y2 in range(pos_ln[1]):
-                        list_upper.append(g.resolved_puzzle.get(x1, y2))
-                    for y2 in range(y1+1, puzzle.size):
-                        if puzzle.get(x1, y2) != 0:
-                            if puzzle.get(x1, y2) in list_upper:
-                                inversions += 1
-
+            inversions += puzzle.get_inversions(x1, y1)
     puzzle.dist_to_goal = heuristic_manhattan(puzzle) + inversions * 2
     return puzzle.dist_to_goal
 

@@ -5,6 +5,7 @@ from srcs.stats import get_stats
 from srcs.heuristics import heuristic_list
 from heapq import heapify, heappush, heappop, nsmallest
 
+
 def get_all_childs(puzzle, heuristic, auto_update=True):
     """
     get all childs from a puzzle

@@ -77,6 +77,9 @@ class Puzzle(list):
         return dist
 
     def is_well_placed(self, x, y=None):
+        """
+        return True if the element is well placed
+        """
         if y is None:
             index = x
         else:
@@ -84,6 +87,33 @@ class Puzzle(list):
         if g.resolved_puzzle[index] == self[index] or self[index] == 0:
             return True
         return False
+
+    def get_inversions(self, x1, y1=None):
+        """
+        get number of inversion on an element
+        """
+        inversions = 0
+        if self.get(x1, y1) != 0:
+            pos_col = self.is_in_column(x1, y1)
+            if pos_col:
+                list_upper = []  # list of all elements upper
+                for x2 in range(pos_col[0]):
+                    list_upper.append(g.resolved_puzzle.get(x2, y1))
+                for x2 in range(x1+1, self.size):
+                    if self.get(x2, y1) != 0:
+                        if self.get(x2, y1) in list_upper:
+                            inversions += 1
+
+            pos_ln = self.is_in_line(x1, y1)
+            if pos_ln:
+                list_upper = []  # list of all elements upper
+                for y2 in range(pos_ln[1]):
+                    list_upper.append(g.resolved_puzzle.get(x1, y2))
+                for y2 in range(y1+1, self.size):
+                    if self.get(x1, y2) != 0:
+                        if self.get(x1, y2) in list_upper:
+                            inversions += 1
+        return inversions
 
     def is_in_line(self, x, y=None):
         """
@@ -129,6 +159,9 @@ class Puzzle(list):
                 last_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
             elif self.heuristic == 'hamming' and self.dist_to_goal is not None:
                 last_dist = int(not self.is_well_placed(x1, y1)) + int(not self.is_well_placed(x2, y2))
+            elif self.heuristic == 'linear_conflict' and self.dist_manhattan is not None:
+                last_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
+                # last_inv = self.get_inversions(x1, y1) * 2 + self.get_inversions(x2, y2) * 2
 
         tmp = self.get(x1, y1)
         self.set(x1, y1, self.get(x2, y2))
@@ -149,6 +182,13 @@ class Puzzle(list):
             elif self.heuristic == 'hamming' and self.dist_to_goal is not None:
                 new_dist = int(not self.is_well_placed(x1, y1)) + int(not self.is_well_placed(x2, y2))
                 self.dist_to_goal = self.dist_to_goal - last_dist + new_dist
+            elif self.heuristic == 'linear_conflict' and self.dist_manhattan is not None:
+                new_dist = self.get_dist_from_goal(x1, y1) + self.get_dist_from_goal(x2, y2)
+                new_inv = self.get_inversions(x1, y1) * 2 + self.get_inversions(x2, y2) * 2
+                self.dist_manhattan = self.dist_manhattan - last_dist + new_dist
+                # self.dist_to_goal = self.dist_manhattan - last_inv + new_inv
+                self.dist_to_goal = None
+                self.calc_heuristic()
             else:
                 self.dist_to_goal = None
                 self.dist_manhattan = None

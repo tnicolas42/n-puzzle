@@ -24,9 +24,12 @@ if __name__ == "__main__":
                         help="This is the heuristic function")
     parser.add_argument("--stats", action="store_true", default=False,
                         help="Print stats about functions [for debug]")
+    parser.add_argument("--disable_auto_update", action="store_false", default=True,
+                        help="Disable the auto update of heuristic")
     args = parser.parse_args()
 
     EnableStats.enable = args.stats
+    param['auto_update_heuristic'] = args.disable_auto_update
 
     if args.puzzle == "":
         data = "".join(sys.stdin.readlines())
