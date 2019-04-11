@@ -39,6 +39,8 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
     else:
         puzzle.set(size // 2, (size - 1) // 2, 0)
 
+    puzzle.updtHash()
+
     return puzzle
 
 

@@ -2,7 +2,7 @@
 import copy
 import srcs.global_var as g
 from srcs.stats import get_stats
-
+from heapq import heapify, heappush, heappop, nsmallest
 
 def heuristic_manhattan(puzzle):
     if puzzle.dist_to_goal is not None:  # if the distance are already calculated
@@ -17,35 +17,6 @@ def heuristic_manhattan(puzzle):
 heuristic_list = dict(  # list of all heuristic function
     manhattan=heuristic_manhattan,
 )
-
-
-def get_dist_form_start(puzzle):
-    return puzzle.dist_from_start
-
-
-@get_stats
-def get_total_dist(puzzle, heuristic):
-    """
-    get dist from start + heuristic
-    """
-    return get_dist_form_start(puzzle) + heuristic_list[heuristic](puzzle)
-
-
-@get_stats
-def get_min_puzzle_index(opened, heuristic):
-    """
-    get the "best" puzzle from opened list
-    """
-    min_index = 0
-    min_dist = get_total_dist(opened[0], heuristic)
-
-    for i in range(1, len(opened)):
-        dist = get_total_dist(opened[i], heuristic)
-        if dist < min_dist:
-            min_dist = dist
-            min_index = i
-
-    return min_index
 
 
 def get_all_childs(puzzle, heuristic):
@@ -81,8 +52,9 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
         puzzle -> the last puzzle
     )
     """
-    opened = [puzzle]
-    closed = []
+    opened = []
+    heappush(opened, puzzle)
+    closed = dict()
 
     result = dict(
         max_opened=0,
@@ -94,15 +66,15 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
         result['max_opened'] = max(result['max_opened'], len(opened))
 
         # get the puzzle with the min dist from start in opened
-        used = get_min_puzzle_index(opened, heuristic)
+        used = heappop(opened)
         # put this node in closed
-        closed.append(opened[used])
-        opened.pop(used)
+        closed[used.hash] = used
+        lastUsed = used
         # get all childs of the selected path
         if auto_update_heuristic:
-            childs = get_all_childs(closed[-1], heuristic=heuristic)
+            childs = get_all_childs(lastUsed, heuristic=heuristic)
         else:
-            childs = get_all_childs(closed[-1], heuristic=None)
+            childs = get_all_childs(lastUsed, heuristic=None)
 
         for child in childs:
 
@@ -119,21 +91,18 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
                 pass
             child_close_cpy = None  # index of a copy of child in closed (if exist)
             if child_open_cpy is None:
-                try:
-                    child_close_cpy = closed.index(child)
-                except ValueError:
-                    pass
+                if child.hash in closed:
+                    child_close_cpy = child
 
             if child_open_cpy is None and child_close_cpy is None:
-                opened.append(child)
+                heappush(opened, child)
                 result['total_opened'] += 1
 
-            if child_open_cpy is not None and \
-               get_total_dist(opened[child_open_cpy], heuristic) > get_total_dist(child, heuristic):
+            if child_open_cpy is not None and opened[child_open_cpy] >= child:
                 opened[child_open_cpy] = child
+                heapify(opened) # heapify because we have changed element value
 
-            if child_close_cpy is not None and \
-               get_total_dist(closed[child_close_cpy], heuristic) > get_total_dist(child, heuristic):
-                closed[child_close_cpy] = child
+            if child_close_cpy is not None and closed[child.hash] >= child:
+                closed[child.hash] = child
 
     return None  # the resolution is impossible
