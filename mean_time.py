@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("size", type=int, help="Size of the puzzle -> must be > 3")
     parser.add_argument("--path", type=str, default=PATH_TEST, help="the folder with examples")
-    parser.add_argument("--heuristic", type=str, default="manhattan",
+    parser.add_argument("--heuristic", type=str, default="linear_conflict",
                         help="This is the heuristic function")
     args = parser.parse_args()
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     total_time = 0
     for t in all_times:
         total_time += t
-    print("\nsummary for %d files" % (len(all_times)))
+    print("\nsummary for %d files using %s" % (len(all_times), args.heuristic))
     print("total time: %dm %.2fs" % (int(total_time // 60), total_time % 60))
     print("mean time: %.2fs" % (total_time / len(all_times)))
     print("max time: %.2fs" % (max(all_times)))

@@ -2,41 +2,11 @@
 import copy
 import srcs.global_var as g
 from srcs.stats import get_stats
+from srcs.heuristics import heuristic_list
 from heapq import heapify, heappush, heappop, nsmallest
 
-def heuristic_manhattan(puzzle):
-    """
-    return the sum of all dist btw puzzles and goals
-    """
 
-    if puzzle.dist_to_goal is not None:  # if the distance are already calculated
-        return puzzle.dist_to_goal
-    total = 0
-    for i in range(g.total_size):
-        total += puzzle.get_dist_from_goal(i)
-    puzzle.dist_to_goal = total
-    return total
-
-
-def heuristic_hamming(puzzle):
-    """
-    return the number of misplaced puzzle
-    """
-    if puzzle.dist_to_goal is not None:  # if the distance are already calculated
-        return puzzle.dist_to_goal
-    total = 0
-    for i in range(g.total_size):
-        total += not puzzle.is_well_placed(i)
-    puzzle.dist_to_goal = total
-    return total
-
-
-heuristic_list = dict(  # list of all heuristic function
-    manhattan=heuristic_manhattan,
-    hamming=heuristic_hamming,
-)
-
-def get_all_childs(puzzle, heuristic):
+def get_all_childs(puzzle, heuristic, auto_update=True):
     """
     get all childs from a puzzle
     """
@@ -44,16 +14,16 @@ def get_all_childs(puzzle, heuristic):
 
     # create child only with specifics confitions
     if puzzle.last_move is not 'B' and puzzle.pos0xy[0] > 0:
-        childs.append(copy.deepcopy(puzzle).move('T', heuristic=heuristic))
+        childs.append(copy.deepcopy(puzzle).move('T', auto_update=auto_update))
     if puzzle.last_move is not 'T' and puzzle.pos0xy[0] < puzzle.size - 1:
-        childs.append(copy.deepcopy(puzzle).move('B', heuristic=heuristic))
+        childs.append(copy.deepcopy(puzzle).move('B', auto_update=auto_update))
     if puzzle.last_move is not 'R' and puzzle.pos0xy[1] > 0:
-        childs.append(copy.deepcopy(puzzle).move('L', heuristic=heuristic))
+        childs.append(copy.deepcopy(puzzle).move('L', auto_update=auto_update))
     if puzzle.last_move is not 'L' and puzzle.pos0xy[1] < puzzle.size - 1:
-        childs.append(copy.deepcopy(puzzle).move('R', heuristic=heuristic))
+        childs.append(copy.deepcopy(puzzle).move('R', auto_update=auto_update))
 
     for i in range(len(childs) - 1, -1, -1):
-        childs[i].init_child(parent=puzzle)
+        childs[i].init_child(parent=puzzle, _heuristic=heuristic)
     return childs
 
 
@@ -88,10 +58,7 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
         closed[used.hash] = used
         lastUsed = used
         # get all childs of the selected path
-        if auto_update_heuristic:
-            childs = get_all_childs(lastUsed, heuristic=heuristic)
-        else:
-            childs = get_all_childs(lastUsed, heuristic=None)
+        childs = get_all_childs(lastUsed, heuristic=heuristic, auto_update=auto_update_heuristic)
 
         for child in childs:
 
