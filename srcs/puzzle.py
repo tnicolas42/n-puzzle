@@ -45,6 +45,9 @@ class Puzzle(list):
         return s[:-1]
 
     def calc_heuristic(self, _heuristic=None):
+        """
+        calcul the heuristic of te puzzle
+        """
         if _heuristic is not None:
             self.heuristic = _heuristic
         heuristic_list[self.heuristic](self)
@@ -238,6 +241,16 @@ class Puzzle(list):
         if self.parent is None:
             return ""
         return self.parent.get_path() + self.last_move
+
+    def get_all_puzzles(self, list_puzzle=[]):
+        """
+        get the list of all puzzles
+        """
+        list_puzzle.insert(0, self)
+        if self.parent is None:
+            return list_puzzle
+        return self.parent.get_all_puzzles(list_puzzle)
+
 
     # compare function <
     def __lt__(self, other):
