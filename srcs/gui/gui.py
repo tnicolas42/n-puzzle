@@ -1,17 +1,19 @@
-import tkinter
+import os
 import cv2
-import PIL.Image, PIL.ImageTk
+import tkinter
+import numpy as np
 import srcs.global_var as g
+from time import time, sleep
+import PIL.Image, PIL.ImageTk
 from srcs.gui.utility import Point
 from srcs.generate_puzzle import spiral
-import os
 from platform import system as platform
-from time import time, sleep
 from srcs.solving_out import solving_out
 
 ANIM_STEP_TIME = 25
 ANIM_STEP = 5
 MAX_RESOLVE_STEP_TIME = 1000
+SIZE = 600
 
 class npuzzleGui:
     """
@@ -22,12 +24,13 @@ class npuzzleGui:
     def __init__(self, win, win_title, img_path, puzzle):
         self.win = win
         self.win.title(win_title)
+        self.win.geometry(str(SIZE) + 'x' + str(SIZE))
         self.win.resizable(0, 0) # Don't allow resizing in the x or y direction
 
         self.puzzle = puzzle
 
-        # Load an image using OpenCV
-        self.cv_img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+        # load image and scale it if necessary
+        self.load_img(img_path)
 
         # get image dimension and create canvas accordingly
         self.img_w, self.img_h, self.img_no_channels = self.cv_img.shape
@@ -53,6 +56,27 @@ class npuzzleGui:
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
             os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
         self.win.mainloop()
+
+    def load_img(self, img_path):
+        # load the image using OpenCV
+        self.cv_img = cv2.imread(img_path)
+        old_size = self.cv_img.shape[:2]
+
+        # scale image to match SIZE
+        ratio = SIZE / max(old_size)
+        new_size = tuple([int(x * ratio) for x in old_size])
+        self.cv_img = cv2.resize(self.cv_img, (new_size[1], new_size[0]))
+
+        # calculate the offset
+        left = (SIZE - new_size[1]) // 2
+        top = (SIZE - new_size[0]) // 2
+
+        # create background image (used only if image is not a square)
+        img = np.full((SIZE, SIZE, 3), 255, np.uint8)
+
+        # paste the image to the background
+        img[top:top + self.cv_img.shape[0], left:left + self.cv_img.shape[1]] = self.cv_img
+        self.cv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     def centerWindows(self):
         """
