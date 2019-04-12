@@ -15,7 +15,11 @@ admissible_heuristics = ('manhattan', 'hamming', 'linear_conflict')
 param = dict(
     heuristic='linear_conflict',
     auto_update_heuristic=True,
-    greedy_search=False
+    greedy_search=False,
+    super_fast=False,
+    resolved_puzzle=None,
+    size=None,  # 3 if 3*3
+    total_size=None,  # 9 if 3*3
 )
 
 BOLD = "\033[1m"
@@ -39,12 +43,22 @@ if __name__ == "__main__":
                             help="Set an uniform cost (heuristic funcion return 0) -> it's like dijkstra")
         parser.add_argument("-g", "--greedy", action="store_true", default=False,
                             help="Go to only one path, used to find a solution very quickly but it's not the better path")
+        parser.add_argument("-f", "--super_fast", action="store_true", default=False,
+                            help="Super fast algoritm -> just ignore the distance from start")
 
         args = parser.parse_args()
 
         EnableStats.enable = args.stats
         param['auto_update_heuristic'] = args.disable_auto_update
         param['greedy_search'] = args.greedy
+        param['super_fast'] = args.super_fast
+        # select the right heuristic function
+        param['heuristic'] = args.heuristic
+        if args.uniform_cost:
+            param['heuristic'] = 'uniform_cost'
+
+        # init the global vairable
+        g.init_global(param_=param)
 
         if args.puzzle == "":
             data = "".join(sys.stdin.readlines())
@@ -63,24 +77,17 @@ if __name__ == "__main__":
             exit(1)
 
         # create a resolved puzzle
-        resolv_puzzle = generate_puzzle(puzzle.size)
-        total_sz = puzzle.size * puzzle.size
-        # init some global vairables
-        g.init_global(puzzle=resolv_puzzle, total_size_=total_sz)
-        # select the right heuristic function
-        param['heuristic'] = args.heuristic
-        if args.uniform_cost:
-            param['heuristic'] = 'uniform_cost'
+        param['resolved_puzzle'] = generate_puzzle(param['size'])
 
         # get the heuristic for the first puzzle
-        puzzle.calc_heuristic(param['heuristic'])
+        puzzle.calc_heuristic()
         # start the main algo
-        result = a_star_algo(puzzle, **param)
+        result = a_star_algo(puzzle)
 
         if not result and param['greedy_search']:
             param['greedy_search'] = False
             print('unable to get the solution with a greedy algoritm, retry without greedy')
-            result = a_star_algo(puzzle, **param)
+            result = a_star_algo(puzzle)
 
         # if the algo fail (no solution)
         if not result:
@@ -103,6 +110,8 @@ if __name__ == "__main__":
         path = result['puzzle'].get_path()
         if args.greedy:
             print('using greedy algoritm')
+        if param['super_fast']:
+            print('using super fast algo')
         print('all moves (%s%d%s): %s' % (BOLD, len(path), EOC, path))
         print('max opened at the same time: %s%d%s' % (BOLD, result['max_opened'], EOC))
         print('total opened: %s%d%s -> using %s' % (BOLD, result['total_opened'], EOC, param['heuristic']))

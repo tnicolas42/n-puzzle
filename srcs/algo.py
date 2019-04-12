@@ -8,7 +8,7 @@ from heapq import heapify, heappush, heappop, nsmallest
 
 
 @get_stats
-def get_all_childs(puzzle, heuristic, auto_update=True, greedy_search=False):
+def get_all_childs(puzzle):
     """
     get all childs from a puzzle
     """
@@ -16,32 +16,25 @@ def get_all_childs(puzzle, heuristic, auto_update=True, greedy_search=False):
 
     # create child only with specifics confitions
     if puzzle.last_move is not 'B' and puzzle.pos0xy[0] > 0:
-        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
-                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
-        childs.append(new_puzzle.move('T', auto_update=auto_update))
-    if puzzle.last_move is not 'T' and puzzle.pos0xy[0] < puzzle.size - 1:
-        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
-                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
-        childs.append(new_puzzle.move('B', auto_update=auto_update))
+        new_puzzle = Puzzle(list(puzzle), parent=puzzle)
+        childs.append(new_puzzle.move('T'))
+    if puzzle.last_move is not 'T' and puzzle.pos0xy[0] < g.param['size'] - 1:
+        new_puzzle = Puzzle(list(puzzle), parent=puzzle)
+        childs.append(new_puzzle.move('B'))
     if puzzle.last_move is not 'R' and puzzle.pos0xy[1] > 0:
-        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
-                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
-        childs.append(new_puzzle.move('L', auto_update=auto_update))
-    if puzzle.last_move is not 'L' and puzzle.pos0xy[1] < puzzle.size - 1:
-        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
-                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
-        childs.append(new_puzzle.move('R', auto_update=auto_update))
+        new_puzzle = Puzzle(list(puzzle), parent=puzzle)
+        childs.append(new_puzzle.move('L'))
+    if puzzle.last_move is not 'L' and puzzle.pos0xy[1] < g.param['size'] - 1:
+        new_puzzle = Puzzle(list(puzzle), parent=puzzle)
+        childs.append(new_puzzle.move('R'))
 
-    for i in range(len(childs) - 1, -1, -1):
-        childs[i].init_child(parent=puzzle)
-
-    if greedy_search:
+    if g.param['greedy_search']:
         return [min(childs)]
     return childs
 
 
 @get_stats
-def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True, greedy_search=False):
+def a_star_algo(puzzle):
     """
     it is the main function to solv the n-puzzle
 
@@ -71,12 +64,12 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True, greed
         closed[used.hash] = used
         lastUsed = used
         # get all childs of the selected path
-        childs = get_all_childs(lastUsed, heuristic=heuristic, auto_update=auto_update_heuristic, greedy_search=greedy_search)
+        childs = get_all_childs(lastUsed)
 
         for child in childs:
 
             # check if it is finish
-            if child == g.resolved_puzzle:
+            if child == g.param['resolved_puzzle']:
                 result['puzzle'] = child
                 return result  # the algo is finished
 

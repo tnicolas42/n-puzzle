@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import srcs.global_var as g
 from srcs.puzzle import Puzzle
 
 
@@ -57,7 +58,9 @@ def parse(npuzzle_str):
             print('[ERROR]: value %d is missing' % (i))
             return None
 
-    return Puzzle(size=size_puzzle, puzzle=puzzle)
+    g.param['size'] = size_puzzle
+    g.param['total_size'] = size_puzzle * size_puzzle
+    return Puzzle(puzzle=puzzle)
 
 
 def parse_from_file(filename):
