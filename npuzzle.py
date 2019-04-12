@@ -3,6 +3,7 @@ import sys
 import random
 import argparse
 import traceback
+from pathlib import Path
 import srcs.global_var as g
 from srcs.generate_puzzle import generate_puzzle, generate_random
 from srcs.parser import parse_from_file, parse
@@ -39,6 +40,8 @@ if __name__ == "__main__":
 
         parser.add_argument("--gui", action="store_true", default=False,
                         help="Open the graphical interface")
+        parser.add_argument("--img", type=str, default="img/3grid.png",
+                        help="Source of the picture for the graphical interface")
 
         parser.add_argument("-r", "--random", type=int, default=-1,
                             help="Generate a random puzzle of a given size")
@@ -101,7 +104,12 @@ if __name__ == "__main__":
             exit(1)
 
         if (args.gui):
-            start_gui("img/3grid.png", puzzle)
+            img_file = Path(args.img)
+            if img_file.is_file():
+                start_gui(args.img, puzzle)
+            else:
+                print("error while loading img: not a valid file")
+                exit(1)
         else:
             solving_out(puzzle)
     except Exception as e:
