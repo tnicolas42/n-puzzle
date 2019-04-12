@@ -7,9 +7,8 @@ from srcs.generate_puzzle import generate_puzzle
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
 from srcs.stats import print_stats, EnableStats
-from srcs.algo import a_star_algo, heuristic_list
 from srcs.gui.gui import start_gui
-
+from srcs.solving_out import solving_out
 
 admissible_heuristics = ('manhattan', 'hamming', 'linear_conflict')
 
@@ -22,9 +21,6 @@ param = dict(
     size=None,  # 3 if 3*3
     total_size=None,  # 9 if 3*3
 )
-
-BOLD = "\033[1m"
-EOC = "\x1B[0m"
 
 if __name__ == "__main__":
     try:
@@ -62,7 +58,7 @@ if __name__ == "__main__":
             param['heuristic'] = 'uniform_cost'
 
         # init the global vairable
-        g.init_global(param_=param)
+        g.init_global(param_=param, args_=args)
 
         if args.puzzle == "":
             data = "".join(sys.stdin.readlines())
@@ -83,45 +79,10 @@ if __name__ == "__main__":
         # create a resolved puzzle
         param['resolved_puzzle'] = generate_puzzle(param['size'])
 
-        # get the heuristic for the first puzzle
-        puzzle.calc_heuristic()
         if (args.gui):
             start_gui("img/3grid.png", puzzle)
         else:
-            # start the main algo
-            result = a_star_algo(puzzle)
-
-            if not result and param['greedy_search']:
-                param['greedy_search'] = False
-                print('unable to get the solution with a greedy algoritm, retry without greedy')
-                result = a_star_algo(puzzle)
-
-            # if the algo fail (no solution)
-            if not result:
-                print("after trying to resolve it, this npuzzle is unsolvable")
-                print(puzzle)
-                exit(1)
-
-            # prin the result
-            print("base puzzle:")
-            print(puzzle)
-            if args.silent:
-                print("result:")
-                print(result['puzzle'])
-            else:
-                list_puzzle = result['puzzle'].get_all_puzzles()
-                for i in range(1, len(list_puzzle)):
-                    print(BOLD + 'move %d: -> %s%s' % (i, list_puzzle[i].last_move,
-                        (' [solved puzzle]' if i+1 == len(list_puzzle) else "") + EOC))
-                    print(list_puzzle[i])
-            path = result['puzzle'].get_path()
-            if args.greedy:
-                print('using greedy algoritm')
-            if param['super_fast']:
-                print('using super fast algo')
-            print('all moves (%s%d%s): %s' % (BOLD, len(path), EOC, path))
-            print('max opened at the same time: %s%d%s' % (BOLD, result['max_opened'], EOC))
-            print('total opened: %s%d%s -> using %s' % (BOLD, result['total_opened'], EOC, param['heuristic']))
+            solving_out(puzzle)
     except Exception as e:
         traceback.print_exc()
 

@@ -7,9 +7,11 @@ from srcs.generate_puzzle import spiral
 import os
 from platform import system as platform
 from time import time, sleep
+from srcs.solving_out import solving_out
 
 ANIM_STEP_TIME = 25
 ANIM_STEP = 5
+RESOLVE_STEP_TIME = 500
 
 class npuzzleGui:
     """
@@ -84,6 +86,13 @@ class npuzzleGui:
                 self.boxes_img.append(box_img)
 
     def keyPress(self, e):
+        # start solving key
+        if (e.keysym == "Return" or e.keysym == "space"):
+            result = solving_out(self.puzzle)
+            moves = result['puzzle'].get_path()
+            self.resolveAnim(list(moves))
+
+        # move keys
         if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
             self.move('B')
         elif (e.keysym == "Right" or e.keysym == "d") and self.puzzle.pos0xy[1] > 0:
@@ -92,6 +101,11 @@ class npuzzleGui:
             self.move('T')
         elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
             self.move('R')
+
+    def resolveAnim(self, moves):
+        if (len(moves) > 0):
+            self.move(moves.pop(0))
+            self.canvas.after(ANIM_STEP_TIME*ANIM_STEP + RESOLVE_STEP_TIME, self.resolveAnim, moves)
 
     def move(self, direction):
         save = list(self.puzzle)
