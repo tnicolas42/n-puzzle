@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import srcs.global_var as g
-from srcs.stats import get_stats
+from srcs.stats import get_stats, get_and_print_stats
 from srcs.heuristics import heuristic_list
 
 
@@ -10,7 +10,7 @@ class Puzzle(list):
         for 3*3 puzzle
         [1, 2, 3, 8, 0, 4, 7, 6, 5]
     """
-    def __init__(self, size, puzzle, _heuristic=None, *args, **kwargs):
+    def __init__(self, size, puzzle, _heuristic=None, dist_from_start_=0, dist_manhattan_=None, dist_to_goal_=None, *args, **kwargs):
         list.__init__(self, *args, **kwargs)
 
         self.size = size
@@ -21,16 +21,15 @@ class Puzzle(list):
 
         # saved info to avoid useless calcul
         self.heuristic = _heuristic
-        self.dist_from_start = 0
-        self.dist_manhattan = None
-        self.dist_to_goal = None
+        self.dist_from_start = dist_from_start_
+        self.dist_manhattan = dist_manhattan_
+        self.dist_to_goal = dist_to_goal_
         # position of 0 in the list (x, y)
         idx = self.index(0)
         self.pos0xy = [idx // self.size, idx % self.size]
 
-    def init_child(self, parent, _heuristic):
+    def init_child(self, parent):
         self.parent = parent
-        self.heuristic = _heuristic
 
     def __str__(self):
         s = ''

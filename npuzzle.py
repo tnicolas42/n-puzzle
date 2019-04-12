@@ -106,7 +106,7 @@ if __name__ == "__main__":
         print('all moves (%s%d%s): %s' % (BOLD, len(path), EOC, path))
         print('max opened at the same time: %s%d%s' % (BOLD, result['max_opened'], EOC))
         print('total opened: %s%d%s -> using %s' % (BOLD, result['total_opened'], EOC, param['heuristic']))
-    except:
+    except Exception as e:
         traceback.print_exc()
 
     print_stats()

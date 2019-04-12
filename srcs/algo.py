@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 import sys
-import copy
 import srcs.global_var as g
-from srcs.stats import get_stats
+from srcs.puzzle import Puzzle
 from srcs.heuristics import heuristic_list
+from srcs.stats import get_stats, get_and_print_stats
 from heapq import heapify, heappush, heappop, nsmallest
 
 
+@get_stats
 def get_all_childs(puzzle, heuristic, auto_update=True, greedy_search=False):
     """
     get all childs from a puzzle
@@ -15,19 +16,26 @@ def get_all_childs(puzzle, heuristic, auto_update=True, greedy_search=False):
 
     # create child only with specifics confitions
     if puzzle.last_move is not 'B' and puzzle.pos0xy[0] > 0:
-        childs.append(copy.deepcopy(puzzle).move('T', auto_update=auto_update))
+        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
+                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
+        childs.append(new_puzzle.move('T', auto_update=auto_update))
     if puzzle.last_move is not 'T' and puzzle.pos0xy[0] < puzzle.size - 1:
-        childs.append(copy.deepcopy(puzzle).move('B', auto_update=auto_update))
+        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
+                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
+        childs.append(new_puzzle.move('B', auto_update=auto_update))
     if puzzle.last_move is not 'R' and puzzle.pos0xy[1] > 0:
-        childs.append(copy.deepcopy(puzzle).move('L', auto_update=auto_update))
+        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
+                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
+        childs.append(new_puzzle.move('L', auto_update=auto_update))
     if puzzle.last_move is not 'L' and puzzle.pos0xy[1] < puzzle.size - 1:
-        childs.append(copy.deepcopy(puzzle).move('R', auto_update=auto_update))
+        new_puzzle = Puzzle(puzzle.size, list(puzzle), _heuristic=heuristic, dist_from_start_=puzzle.dist_from_start,
+                            dist_manhattan_=puzzle.dist_manhattan, dist_to_goal_=puzzle.dist_to_goal)
+        childs.append(new_puzzle.move('R', auto_update=auto_update))
 
     for i in range(len(childs) - 1, -1, -1):
-        childs[i].init_child(parent=puzzle, _heuristic=heuristic)
+        childs[i].init_child(parent=puzzle)
 
     if greedy_search:
-        sys.stdout.flush()
         return [min(childs)]
     return childs
 
