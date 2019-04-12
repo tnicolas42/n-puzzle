@@ -6,6 +6,10 @@ from srcs.gui.utility import Point
 from srcs.generate_puzzle import spiral
 import os
 from platform import system as platform
+from time import time, sleep
+
+ANIM_STEP_TIME = 25
+ANIM_STEP = 5
 
 class npuzzleGui:
     """
@@ -80,23 +84,33 @@ class npuzzleGui:
                 self.boxes_img.append(box_img)
 
     def keyPress(self, e):
-        mooved = False
-        if e.keysym == "Up" or e.keysym == "w" and self.puzzle.pos0xy[0] > 0:
-            self.puzzle.move('T')
-            mooved = True
-        elif e.keysym == "Right" or e.keysym == "d" and self.puzzle.pos0xy[1] < self.puzzle.size - 1:
-            self.puzzle.move('R')
-            mooved = True
-        elif e.keysym == "Down" or e.keysym == "s" and self.puzzle.pos0xy[0] < self.puzzle.size - 1:
-            self.puzzle.move('B')
-            mooved = True
-        elif e.keysym == "Left" or e.keysym == "a" and self.puzzle.pos0xy[1] > 0:
-            self.puzzle.move('L')
-            mooved = True
+        if e.keysym == "Up" or e.keysym == "w" and self.puzzle.pos0xy[0] < self.puzzle.size - 1:
+            self.move('B')
+        elif e.keysym == "Right" or e.keysym == "d" and self.puzzle.pos0xy[1] > 0:
+            self.move('L')
+        elif e.keysym == "Down" or e.keysym == "s" and self.puzzle.pos0xy[0] > 0:
+            self.move('T')
+        elif e.keysym == "Left" or e.keysym == "a" and self.puzzle.pos0xy[1] < self.puzzle.size - 1:
+            self.move('R')
 
-        if mooved:
-            print('mooved !')
+    def move(self, direction):
+        save = list(self.puzzle)
+        self.puzzle.move(direction)
 
+        # calculate shift length
+        startI = list(self.puzzle).index(0)
+        destI = save.index(0)
+        shift = self.get_pos(destI) - self.get_pos(startI)
+
+        # animate movement
+        shift.Y /= ANIM_STEP
+        shift.X /= ANIM_STEP
+        self.moveShape(self.boxes[self.puzzle[destI]], shift, ANIM_STEP, 0)
+
+    def moveShape(self, shape, shift, maxStep, step):
+        if (step < maxStep):
+            self.canvas.move(shape, shift.X, shift.Y)
+            self.canvas.after(ANIM_STEP_TIME, self.moveShape, shape, shift, maxStep, step+1)
 
 def start_gui(img_path, puzzle):
     npuzzleGui(tkinter.Tk(), "N-Puzzle", img_path, puzzle)

@@ -20,3 +20,6 @@ class Point:
 
     def Y(self):
         return self.Y
+
+    def __sub__(self, other):
+        return Point(self.X - other.X, self.Y - other.Y)
