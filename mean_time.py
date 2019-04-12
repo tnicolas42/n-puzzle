@@ -37,6 +37,8 @@ if __name__ == "__main__":
     files_to_test = os.listdir(PATH_TEST)
     for file in files_to_test:
         if re.match(r'.*' + str(size_test) + '\.\d*\.puzzle', file):
+            print(end=file + ": ")
+            sys.stdout.flush()
             command = GET_TIME + " " + PATH_TEST + '/' + file + " " + (base if base is not "./" else "") + \
                       "npuzzle.py '--heuristic=" + args.heuristic + "'"
             p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
@@ -50,7 +52,7 @@ if __name__ == "__main__":
             else:
                 cur_time = float(out_min_sec[0])
             all_times.append(cur_time)
-            print(file + ": " + str(cur_time) + 's')
+            print(str(cur_time) + 's')
 
     total_time = 0
     for t in all_times:

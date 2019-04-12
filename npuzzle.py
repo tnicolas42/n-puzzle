@@ -130,7 +130,7 @@ if __name__ == "__main__":
                     (' [solved puzzle]' if i+1 == len(list_puzzle) else "") + EOC))
                 print(list_puzzle[i])
         path = result['puzzle'].get_path()
-        if args.greedy:
+        if param['greedy_search']:
             print('using greedy algoritm')
         if param['super_fast']:
             print('using super fast algo')
