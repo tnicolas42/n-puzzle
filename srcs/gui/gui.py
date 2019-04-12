@@ -59,22 +59,28 @@ class npuzzleGui:
 
     def load_img(self, img_path):
         # load the image using OpenCV
-        self.cv_img = cv2.imread(img_path)
-        old_size = self.cv_img.shape[:2]
+        base_img = cv2.imread(img_path)
+        old_size = base_img.shape[:2]
 
         # scale image to match SIZE
         ratio = SIZE / max(old_size)
+        fit_ratio = SIZE / min(old_size)
         new_size = tuple([int(x * ratio) for x in old_size])
-        self.cv_img = cv2.resize(self.cv_img, (new_size[1], new_size[0]))
+        fit_size = tuple([int(x * fit_ratio) for x in old_size])
+        self.cv_img = cv2.resize(base_img, (new_size[1], new_size[0]))
+        blur_img = cv2.resize(base_img, (fit_size[1], fit_size[0]))
 
         # calculate the offset
         left = (SIZE - new_size[1]) // 2
         top = (SIZE - new_size[0]) // 2
+        # for the background
+        bg_left = (fit_size[1] - SIZE) // 2
+        bg_top = (fit_size[0] - SIZE) // 2
 
         # create background image (used only if image is not a square)
-        img = np.full((SIZE, SIZE, 3), 255, np.uint8)
-
-        # paste the image to the background
+        img = blur_img[bg_top:bg_top + blur_img.shape[0], bg_left:bg_left + blur_img.shape[1]]
+        img = cv2.blur(img, (200,200))
+        # put scaled image to the final image
         img[top:top + self.cv_img.shape[0], left:left + self.cv_img.shape[1]] = self.cv_img
         self.cv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
