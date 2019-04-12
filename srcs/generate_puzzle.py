@@ -13,7 +13,7 @@ def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
     if start_nb is None:
         start_nb = 1
 
-    puzzle = Puzzle(size, puzzle)
+    puzzle = Puzzle(puzzle)
     nb = start_nb
 
     for i in range(size - 2 * start_pos[0]):
@@ -54,7 +54,7 @@ def spiral(size, puzzle, start_pos=None, result=None):
     if start_pos is None:
         start_pos = [0, 0]
 
-    puzzle = Puzzle(size, puzzle)
+    puzzle = Puzzle(puzzle)
 
     for i in range(size - 2 * start_pos[0]):
         result.append(puzzle.get(start_pos[0], start_pos[1] + i))

@@ -10,7 +10,7 @@ def heuristic_manhattan(puzzle):
     if puzzle.dist_manhattan is not None:  # if the distance are already calculated
         return puzzle.dist_manhattan
     total = 0
-    for i in range(g.total_size):
+    for i in range(g.param['total_size']):
         total += puzzle.get_dist_from_goal(i)
     puzzle.dist_manhattan = total
     puzzle.dist_to_goal = total
@@ -24,7 +24,7 @@ def heuristic_hamming(puzzle):
     if puzzle.dist_to_goal is not None:  # if the distance are already calculated
         return puzzle.dist_to_goal
     total = 0
-    for i in range(g.total_size):
+    for i in range(g.param['total_size']):
         total += not puzzle.is_well_placed(i)
     puzzle.dist_to_goal = total
     return total
@@ -36,8 +36,8 @@ def heuristic_linear_conflict(puzzle):
     if puzzle.dist_manhattan is not None and puzzle.dist_to_goal is not None:
         return puzzle.dist_to_goal
     inversions = 0
-    for x1 in range(puzzle.size):
-        for y1 in range(puzzle.size):
+    for x1 in range(g.param['size']):
+        for y1 in range(g.param['size']):
             inversions += puzzle.get_inversions(x1, y1)
     puzzle.dist_to_goal = heuristic_manhattan(puzzle) + inversions * 2
     return puzzle.dist_to_goal

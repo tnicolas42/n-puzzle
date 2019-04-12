@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-from srcs.generate_puzzle import generate_puzzle, spiral
+import srcs.global_var as g
 from srcs.stats import get_stats
+from srcs.generate_puzzle import generate_puzzle, spiral
 
 
 def inversions(start):
@@ -8,7 +9,7 @@ def inversions(start):
     An inversion is when a tile precedes another tile with a lower number on it
     The solution state has zero inversions
     """
-    _spiral = spiral(start.size, start)
+    _spiral = spiral(g.param['size'], start)
 
     inversions = 0
     for i, val in enumerate(_spiral):
