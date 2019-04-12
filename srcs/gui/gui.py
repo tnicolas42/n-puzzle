@@ -82,7 +82,7 @@ class npuzzleGui:
         bg_top = (fit_size[0] - self.w_size) // 2
 
         # create background image (used only if image is not a square)
-        img = blur_img[bg_top:bg_top + blur_img.shape[0], bg_left:bg_left + blur_img.shape[1]]
+        img = blur_img[bg_top:bg_top + self.w_size, bg_left:bg_left + self.w_size]
         img = cv2.blur(img, (200,200))
         # put scaled image to the final image
         img[top:top + self.cv_img.shape[0], left:left + self.cv_img.shape[1]] = self.cv_img
