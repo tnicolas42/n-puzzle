@@ -13,7 +13,6 @@ from srcs.solving_out import solving_out
 ANIM_STEP_TIME = 25
 ANIM_STEP = 5
 MAX_RESOLVE_STEP_TIME = 1000
-SIZE = 600
 
 class npuzzleGui:
     """
@@ -21,10 +20,15 @@ class npuzzleGui:
     """
     boxes_img = []
 
-    def __init__(self, win, win_title, img_path, puzzle):
+    def __init__(self, win, win_title, img_path, puzzle, w_size):
         self.win = win
         self.win.title(win_title)
-        self.win.geometry(str(SIZE) + 'x' + str(SIZE))
+
+        # manage window size
+        max_w = min(self.win.winfo_screenwidth(), self.win.winfo_screenheight())
+        self.w_size = w_size if w_size >= 50 else int(max_w / 2)
+        self.w_size = self.w_size if self.w_size <= max_w else max_w
+        self.win.geometry(str(self.w_size) + 'x' + str(self.w_size))
         self.win.resizable(0, 0) # Don't allow resizing in the x or y direction
 
         self.puzzle = puzzle
@@ -62,20 +66,20 @@ class npuzzleGui:
         base_img = cv2.imread(img_path)
         old_size = base_img.shape[:2]
 
-        # scale image to match SIZE
-        ratio = SIZE / max(old_size)
-        fit_ratio = SIZE / min(old_size)
+        # scale image to match w_size
+        ratio = self.w_size / max(old_size)
+        fit_ratio = self.w_size / min(old_size)
         new_size = tuple([int(x * ratio) for x in old_size])
         fit_size = tuple([int(x * fit_ratio) for x in old_size])
         self.cv_img = cv2.resize(base_img, (new_size[1], new_size[0]))
         blur_img = cv2.resize(base_img, (fit_size[1], fit_size[0]))
 
         # calculate the offset
-        left = (SIZE - new_size[1]) // 2
-        top = (SIZE - new_size[0]) // 2
+        left = (self.w_size - new_size[1]) // 2
+        top = (self.w_size - new_size[0]) // 2
         # for the background
-        bg_left = (fit_size[1] - SIZE) // 2
-        bg_top = (fit_size[0] - SIZE) // 2
+        bg_left = (fit_size[1] - self.w_size) // 2
+        bg_top = (fit_size[0] - self.w_size) // 2
 
         # create background image (used only if image is not a square)
         img = blur_img[bg_top:bg_top + blur_img.shape[0], bg_left:bg_left + blur_img.shape[1]]
@@ -172,5 +176,5 @@ class npuzzleGui:
             self.canvas.move(shape, shift.X, shift.Y)
             self.canvas.after(ANIM_STEP_TIME, self.moveShape, shape, shift, maxStep, step+1)
 
-def start_gui(img_path, puzzle):
-    npuzzleGui(tkinter.Tk(), "N-Puzzle", img_path, puzzle)
+def start_gui(img_path, puzzle, w_size):
+    npuzzleGui(tkinter.Tk(), "N-Puzzle", img_path, puzzle, w_size)
