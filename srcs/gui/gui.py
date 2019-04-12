@@ -47,6 +47,7 @@ class npuzzleGui:
         self.win.bind('<Key>', self.keyPress)
 
         self.resolve_step_time = int(MAX_RESOLVE_STEP_TIME / 2)
+        self.is_solving = False
 
         self.centerWindows()
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
@@ -91,32 +92,37 @@ class npuzzleGui:
                 self.boxes_img.append(box_img)
 
     def keyPress(self, e):
-        # start solving key
-        if (e.keysym == "Return" or e.keysym == "space"):
-            result = solving_out(self.puzzle)
-            moves = result['puzzle'].get_path()
-            self.resolveAnim(list(moves))
+        if not self.is_solving:
+            print("Hey!")
+            # start solving key
+            if (e.keysym == "Return" or e.keysym == "space"):
+                self.is_solving = True
+                result = solving_out(self.puzzle)
+                moves = result['puzzle'].get_path()
+                self.resolveAnim(list(moves))
 
-        # changing speed key
-        if (e.keysym == "minus"):
-            self.resolve_step_time = self.resolve_step_time + 10 if self.resolve_step_time + 10 <= MAX_RESOLVE_STEP_TIME else MAX_RESOLVE_STEP_TIME
-        if (e.keysym == "plus"):
-            self.resolve_step_time = self.resolve_step_time - 10 if self.resolve_step_time - 10 >= 0 else 0
+            # changing speed key
+            if (e.keysym == "minus"):
+                self.resolve_step_time = self.resolve_step_time + 10 if self.resolve_step_time + 10 <= MAX_RESOLVE_STEP_TIME else MAX_RESOLVE_STEP_TIME
+            if (e.keysym == "plus"):
+                self.resolve_step_time = self.resolve_step_time - 10 if self.resolve_step_time - 10 >= 0 else 0
 
-        # move keys
-        if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
-            self.move('B')
-        elif (e.keysym == "Right" or e.keysym == "d") and self.puzzle.pos0xy[1] > 0:
-            self.move('L')
-        elif (e.keysym == "Down" or e.keysym == "s") and self.puzzle.pos0xy[0] > 0:
-            self.move('T')
-        elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
-            self.move('R')
+            # move keys
+            if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
+                self.move('B')
+            elif (e.keysym == "Right" or e.keysym == "d") and self.puzzle.pos0xy[1] > 0:
+                self.move('L')
+            elif (e.keysym == "Down" or e.keysym == "s") and self.puzzle.pos0xy[0] > 0:
+                self.move('T')
+            elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
+                self.move('R')
 
     def resolveAnim(self, moves):
         if (len(moves) > 0):
             self.move(moves.pop(0))
             self.canvas.after(ANIM_STEP_TIME*ANIM_STEP + self.resolve_step_time, self.resolveAnim, moves)
+        else:
+            self.is_solving = False
 
     def move(self, direction):
         save = list(self.puzzle)
