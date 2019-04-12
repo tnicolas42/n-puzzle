@@ -1,5 +1,41 @@
 #!/usr/bin/python3
+import random
+import srcs.global_var as g
 from srcs.puzzle import Puzzle
+from srcs.stats import get_stats
+
+
+def generate_random(solvable=True, iterations=10000):
+    def swap_empty(p):
+        idx = p.index(0)
+        poss = []
+        if idx % g.param['size'] > 0:
+            poss.append(idx - 1)
+        if idx % g.param['size'] < g.param['size'] - 1:
+            poss.append(idx + 1)
+        if idx // g.param['size'] > 0:
+            poss.append(idx - g.param['size'])
+        if idx // g.param['size'] < g.param['size'] - 1:
+            poss.append(idx + g.param['size'])
+        swi = random.choice(poss)
+        p[idx] = p[swi]
+        p[swi] = 0
+
+    if solvable:
+        print("generate a solvable puzzle")
+    else:
+        print("generate an unsolvable puzzle")
+
+    p = list(generate_puzzle(g.param['size']))
+    for i in range(iterations):
+        swap_empty(p)
+
+    if not solvable:
+        if p[0] == 0 or p[1] == 0:
+            p[-1], p[-2] = p[-2], p[-1]
+        else:
+            p[0], p[1] = p[1], p[0]
+    return Puzzle(p)
 
 
 def generate_puzzle(size, puzzle=None, start_pos=None, start_nb=None):
