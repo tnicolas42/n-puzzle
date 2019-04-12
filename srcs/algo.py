@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import sys
 import copy
 import srcs.global_var as g
 from srcs.stats import get_stats
@@ -6,7 +7,7 @@ from srcs.heuristics import heuristic_list
 from heapq import heapify, heappush, heappop, nsmallest
 
 
-def get_all_childs(puzzle, heuristic, auto_update=True):
+def get_all_childs(puzzle, heuristic, auto_update=True, greedy_search=False):
     """
     get all childs from a puzzle
     """
@@ -24,11 +25,15 @@ def get_all_childs(puzzle, heuristic, auto_update=True):
 
     for i in range(len(childs) - 1, -1, -1):
         childs[i].init_child(parent=puzzle, _heuristic=heuristic)
+
+    if greedy_search:
+        sys.stdout.flush()
+        return [min(childs)]
     return childs
 
 
 @get_stats
-def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
+def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True, greedy_search=False):
     """
     it is the main function to solv the n-puzzle
 
@@ -58,7 +63,7 @@ def a_star_algo(puzzle, heuristic='manhattan', auto_update_heuristic=True):
         closed[used.hash] = used
         lastUsed = used
         # get all childs of the selected path
-        childs = get_all_childs(lastUsed, heuristic=heuristic, auto_update=auto_update_heuristic)
+        childs = get_all_childs(lastUsed, heuristic=heuristic, auto_update=auto_update_heuristic, greedy_search=greedy_search)
 
         for child in childs:
 

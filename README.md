@@ -8,8 +8,8 @@ See more on the [subject](https://github.com/tnicolas42/n-puzzle/blob/master/npu
 
 ## Usage
 ```
-usage: npuzzle.py [-h] [--heuristic {manhattan,hamming,linear_conflict}]
-                  [--stats] [--silent] [--disable_auto_update]
+usage: npuzzle.py [-h] [--heuristic {manhattan,hamming,linear_conflict}] [-s]
+                  [--silent] [--disable_auto_update] [-u] [-g]
                   [puzzle]
 
 positional arguments:
@@ -19,10 +19,14 @@ optional arguments:
   -h, --help            show this help message and exit
   --heuristic {manhattan,hamming,linear_conflict}
                         This is the heuristic function
-  --stats               Print stats about functions [for debug]
+  -s, --stats           Print stats about functions [for debug]
   --silent              Don't display all the puzzles states on the output
   --disable_auto_update
                         Disable the auto update of heuristic
+  -u, --uniform_cost    Set an uniform cost (heuristic funcion return 0) ->
+                        it's like dijkstra
+  -g, --greedy          Go to only one path, used to find a solution very
+                        quickly but it's not the better path
 ```
 Example
 ```
