@@ -21,7 +21,7 @@ def solving_out(puzzle):
         print(puzzle)
         exit(1)
 
-    # prin the result
+    # print the result
     print("base puzzle:")
     print(puzzle)
     if g.args.silent:
@@ -34,7 +34,7 @@ def solving_out(puzzle):
                 (' [solved puzzle]' if i+1 == len(list_puzzle) else "") + EOC))
             print(list_puzzle[i])
     path = result['puzzle'].get_path()
-    if g.args.greedy:
+    if g.param['greedy_search']:
         print('using greedy algoritm')
     if g.param['super_fast']:
         print('using super fast algo')
