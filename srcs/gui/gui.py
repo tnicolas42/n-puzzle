@@ -11,7 +11,7 @@ from srcs.solving_out import solving_out
 
 ANIM_STEP_TIME = 25
 ANIM_STEP = 5
-RESOLVE_STEP_TIME = 500
+MAX_RESOLVE_STEP_TIME = 1000
 
 class npuzzleGui:
     """
@@ -45,6 +45,8 @@ class npuzzleGui:
 
         # key binding
         self.win.bind('<Key>', self.keyPress)
+
+        self.resolve_step_time = int(MAX_RESOLVE_STEP_TIME / 2)
 
         self.centerWindows()
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
@@ -95,6 +97,12 @@ class npuzzleGui:
             moves = result['puzzle'].get_path()
             self.resolveAnim(list(moves))
 
+        # changing speed key
+        if (e.keysym == "minus"):
+            self.resolve_step_time = self.resolve_step_time + 10 if self.resolve_step_time + 10 <= MAX_RESOLVE_STEP_TIME else MAX_RESOLVE_STEP_TIME
+        if (e.keysym == "plus"):
+            self.resolve_step_time = self.resolve_step_time - 10 if self.resolve_step_time - 10 >= 0 else 0
+
         # move keys
         if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
             self.move('B')
@@ -108,7 +116,7 @@ class npuzzleGui:
     def resolveAnim(self, moves):
         if (len(moves) > 0):
             self.move(moves.pop(0))
-            self.canvas.after(ANIM_STEP_TIME*ANIM_STEP + RESOLVE_STEP_TIME, self.resolveAnim, moves)
+            self.canvas.after(ANIM_STEP_TIME*ANIM_STEP + self.resolve_step_time, self.resolveAnim, moves)
 
     def move(self, direction):
         save = list(self.puzzle)
