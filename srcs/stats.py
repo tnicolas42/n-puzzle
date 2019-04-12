@@ -20,6 +20,9 @@ class EnableStats:
 
 
 def get_stats(function):
+    """
+    this decorator get stats about one function
+    """
     if EnableStats.stats is None:
         EnableStats.stats = dict()
     EnableStats.stats[function.__name__] = dict(
@@ -39,13 +42,91 @@ def get_stats(function):
     return decorator
 
 
-def print_stats():
+def get_and_print_stats(compact=True, pr_nb_called=True, pr_total_exec_time=True, pr_mean_time=True, pr_frequency=1):
+    """
+    this decorator get stats about one function and print it
+
+    :param compact: print in compact format (only one line) -> default False
+    :param pr_nb_called: print the number of call of the function -> default True
+    :param pr_total_exec_time: print the total time of exec on this function -> default True
+    :param pr_mean_time: print the mean exec time of this function
+    :param pr_frequency: the frequency to print the stats (for example if pr_frequency is 10, the function print the result every 10 call)
+    """
+    def print_stats_in_exec(function):
+        if EnableStats.stats is None:
+            EnableStats.stats = dict()
+        EnableStats.stats[function.__name__] = dict(
+            module=function.__module__,
+            nb_call=0,
+            total_time=0,
+        )
+
+        def decorator(*args, **kwargs):
+            if not EnableStats.enable:
+                return function(*args, **kwargs)
+            EnableStats.stats[function.__name__]['nb_call'] += 1
+            time_start = time.time()
+            ret = function(*args, **kwargs)
+            EnableStats.stats[function.__name__]['total_time'] += time.time() - time_start
+            if EnableStats.stats[function.__name__]['nb_call'] % pr_frequency == 0 or \
+               EnableStats.stats[function.__name__]['nb_call'] == 1:
+                print_stats_one_function(function.__name__,
+                        compact=compact,
+                        pr_nb_called=pr_nb_called,
+                        pr_total_exec_time=pr_total_exec_time,
+                        pr_mean_time=pr_mean_time,)
+            return ret
+        return decorator
+    return print_stats_in_exec
+
+def print_stats_one_function(name, compact=False, pr_nb_called=True, pr_total_exec_time=True, pr_mean_time=True):
+    """
+    print stats about one function
+
+    :param name: the function name
+    :param compact: print in compact format (only one line) -> default False
+    :param pr_nb_called: print the number of call of the function -> default True
+    :param pr_total_exec_time: print the total time of exec on this function -> default True
+    :param pr_mean_time: print the mean exec time of this function
+    """
+    val = EnableStats.stats[name]
+    if compact:
+        s = '%s.py -> %s(' % (val['module'], name)
+        if pr_nb_called:
+            s += 'called %d times' % (val['nb_call'])
+        if val['nb_call'] > 0:
+            if pr_total_exec_time:
+                s += ' total: %fs' % (val['total_time'])
+            if pr_mean_time:
+                s += ' average: %fs' % (val['total_time'] / val['nb_call'])
+        s += ')'
+        print(s)
+    else:
+        print('%s.py -> %s():' % (val['module'], name))
+        if pr_nb_called:
+            print('\tfunction called %d times' % (val['nb_call']))
+        if val['nb_call'] > 0:
+            if pr_total_exec_time:
+                print('\ttotal exec time %fs' % (val['total_time']))
+            if pr_mean_time:
+                print('\tmean time %fs' % (val['total_time'] / val['nb_call']))
+
+
+def print_stats(compact=False, pr_nb_called=True, pr_total_exec_time=True, pr_mean_time=True):
+    """
+    print stats about one or all functions
+
+    :param compact: print in compact format (only one line) -> default False
+    :param pr_nb_called: print the number of call of the function -> default True
+    :param pr_total_exec_time: print the total time of exec on this function -> default True
+    :param pr_mean_time: print the mean exec time of this function
+    """
+
     if EnableStats.stats is None or not EnableStats.enable:
         return
     for key in EnableStats.stats:
-        val = EnableStats.stats[key]
-        print('%s.py -> %s():' % (val['module'], key))
-        print('\tfunction called %d times' % (val['nb_call']))
-        if val['nb_call'] > 0:
-            print('\ttotal exec time %fs' % (val['total_time']))
-            print('\tmean time %fs' % (val['total_time'] / val['nb_call']))
+        print_stats_one_function(key,
+                                 compact=compact,
+                                 pr_nb_called=pr_nb_called,
+                                 pr_total_exec_time=pr_total_exec_time,
+                                 pr_mean_time=pr_mean_time,)
