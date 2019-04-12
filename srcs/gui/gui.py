@@ -11,7 +11,7 @@ class npuzzleGui:
     """
     start the gui wich allow the user to see the puzle solving in a graphical windows
     """
-    boxes = []
+    boxes_img = []
 
     def __init__(self, win, win_title, img_path, puzzle):
         self.win = win
@@ -27,12 +27,17 @@ class npuzzleGui:
         self.img_w, self.img_h, self.img_no_channels = self.cv_img.shape
         self.canvas = tkinter.Canvas(win, width = self.img_w, height = self.img_h)
         self.canvas.pack()
+        self.canvas.configure(background='black')
 
         # calculate the box width
         self.box_w = int(self.img_w / self.puzzle.size)
-        self.get_boxes_img()
+        self.boxes = [None]*self.puzzle.size*self.puzzle.size
+        self.set_boxes_img()
+
         self.printPuzzle()
 
+        # key binding
+        self.win.bind('<Key>', self.keyPress)
 
         self.centerWindows()
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
@@ -51,15 +56,19 @@ class npuzzleGui:
         self.win.geometry("+{}+{}".format(positionRight, positionDown))
 
     def printPuzzle(self):
-        i = 0
-        for y in range(self.puzzle.size):
-            for x in range(self.puzzle.size):
-                self.show_image(Point(x * self.box_w, y * self.box_w), list(g.resolved_puzzle).index(self.puzzle[i]))
-                i += 1
+        for i in range(1, self.puzzle.size * self.puzzle.size):
+            pos = self.get_pos(i)
+            img = self.boxes_img[ list(g.resolved_puzzle).index(self.puzzle[i]) ]
+            self.boxes[self.puzzle[i]] = self.canvas.create_image(pos.X, pos.Y, image=img, anchor=tkinter.NW)
 
-    def get_boxes_img(self):
+    def get_pos(self, i):
+        x = int(i % self.puzzle.size)
+        y = int(i / self.puzzle.size)
+        return Point(x * self.box_w, y * self.box_w)
+
+    def set_boxes_img(self):
         """
-        crop image part coresponding to the puzzle boxes
+        crop image part coresponding to the puzzle boxes_img
         """
         for y in range(self.puzzle.size):
             for x in range(self.puzzle.size):
@@ -68,11 +77,25 @@ class npuzzleGui:
                     self.cv_img[y * self.box_w : (y + 1) * self.box_w, \
                                 x * self.box_w : (x + 1) * self.box_w]
                 ))
-                self.boxes.append(box_img)
+                self.boxes_img.append(box_img)
 
-    def show_image(self, pos, index):
-        self.canvas.create_image(pos.X, pos.Y, image=self.boxes[index], anchor=tkinter.NW)
+    def keyPress(self, e):
+        mooved = False
+        if e.keysym == "Up" or e.keysym == "w" and self.puzzle.pos0xy[0] > 0:
+            self.puzzle.move('T')
+            mooved = True
+        elif e.keysym == "Right" or e.keysym == "d" and self.puzzle.pos0xy[1] < self.puzzle.size - 1:
+            self.puzzle.move('R')
+            mooved = True
+        elif e.keysym == "Down" or e.keysym == "s" and self.puzzle.pos0xy[0] < self.puzzle.size - 1:
+            self.puzzle.move('B')
+            mooved = True
+        elif e.keysym == "Left" or e.keysym == "a" and self.puzzle.pos0xy[1] > 0:
+            self.puzzle.move('L')
+            mooved = True
 
+        if mooved:
+            print('mooved !')
 
 
 def start_gui(img_path, puzzle):
