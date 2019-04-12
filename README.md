@@ -9,7 +9,7 @@ See more on the [subject](https://github.com/tnicolas42/n-puzzle/blob/master/npu
 ## Usage
 ```
 usage: npuzzle.py [-h] [--heuristic {manhattan,hamming,linear_conflict}] [-s]
-                  [--silent] [--disable_auto_update] [-u] [-g]
+                  [--silent] [--disable_auto_update] [-u] [-g] [-f]
                   [puzzle]
 
 positional arguments:
@@ -27,6 +27,8 @@ optional arguments:
                         it's like dijkstra
   -g, --greedy          Go to only one path, used to find a solution very
                         quickly but it's not the better path
+  -f, --super_fast      Super fast algoritm -> just ignore the distance from
+                        start
 ```
 Example
 ```

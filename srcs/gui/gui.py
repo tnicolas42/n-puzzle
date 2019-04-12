@@ -34,8 +34,8 @@ class npuzzleGui:
         self.canvas.configure(background='black')
 
         # calculate the box width
-        self.box_w = int(self.img_w / self.puzzle.size)
-        self.boxes = [None]*self.puzzle.size*self.puzzle.size
+        self.box_w = int(self.img_w / g.param['size'])
+        self.boxes = [None]*g.param['size']*g.param['size']
         self.set_boxes_img()
 
         self.printPuzzle()
@@ -60,22 +60,22 @@ class npuzzleGui:
         self.win.geometry("+{}+{}".format(positionRight, positionDown))
 
     def printPuzzle(self):
-        for i in range(1, self.puzzle.size * self.puzzle.size):
+        for i in range(1, g.param['size'] * g.param['size']):
             pos = self.get_pos(i)
-            img = self.boxes_img[ list(g.resolved_puzzle).index(self.puzzle[i]) ]
+            img = self.boxes_img[ list(g.param['resolved_puzzle']).index(self.puzzle[i]) ]
             self.boxes[self.puzzle[i]] = self.canvas.create_image(pos.X, pos.Y, image=img, anchor=tkinter.NW)
 
     def get_pos(self, i):
-        x = int(i % self.puzzle.size)
-        y = int(i / self.puzzle.size)
+        x = int(i % g.param['size'])
+        y = int(i / g.param['size'])
         return Point(x * self.box_w, y * self.box_w)
 
     def set_boxes_img(self):
         """
         crop image part coresponding to the puzzle boxes_img
         """
-        for y in range(self.puzzle.size):
-            for x in range(self.puzzle.size):
+        for y in range(g.param['size']):
+            for x in range(g.param['size']):
                 # Use PIL (Pillow) to convert the NumPy ndarray to a PhotoImage
                 box_img = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(
                     self.cv_img[y * self.box_w : (y + 1) * self.box_w, \
@@ -84,13 +84,13 @@ class npuzzleGui:
                 self.boxes_img.append(box_img)
 
     def keyPress(self, e):
-        if e.keysym == "Up" or e.keysym == "w" and self.puzzle.pos0xy[0] < self.puzzle.size - 1:
+        if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
             self.move('B')
-        elif e.keysym == "Right" or e.keysym == "d" and self.puzzle.pos0xy[1] > 0:
+        elif (e.keysym == "Right" or e.keysym == "d") and self.puzzle.pos0xy[1] > 0:
             self.move('L')
-        elif e.keysym == "Down" or e.keysym == "s" and self.puzzle.pos0xy[0] > 0:
+        elif (e.keysym == "Down" or e.keysym == "s") and self.puzzle.pos0xy[0] > 0:
             self.move('T')
-        elif e.keysym == "Left" or e.keysym == "a" and self.puzzle.pos0xy[1] < self.puzzle.size - 1:
+        elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
             self.move('R')
 
     def move(self, direction):
