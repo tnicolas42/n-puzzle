@@ -31,7 +31,8 @@ class npuzzleGui:
 
         # get image dimension and create canvas accordingly
         self.img_w, self.img_h, self.img_no_channels = self.cv_img.shape
-        self.canvas = tkinter.Canvas(win, width = self.img_w, height = self.img_h)
+        self.canvas = tkinter.Canvas(win, width = self.img_w, height = self.img_h, bd=0, highlightthickness=0)
+
         self.canvas.pack()
         self.canvas.configure(background='black')
 
