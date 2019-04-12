@@ -9,7 +9,8 @@ See more on the [subject](https://github.com/tnicolas42/n-puzzle/blob/master/npu
 ## Usage
 ```
 usage: npuzzle.py [-h] [--heuristic {manhattan,hamming,linear_conflict}] [-s]
-                  [--silent] [--disable_auto_update] [-u] [-g] [-f]
+                  [--silent] [--disable-auto-update] [-r RANDOM]
+                  [--generate-solvable] [--generate-unsolvable] [-u] [-g] [-f]
                   [puzzle]
 
 positional arguments:
@@ -21,13 +22,18 @@ optional arguments:
                         This is the heuristic function
   -s, --stats           Print stats about functions [for debug]
   --silent              Don't display all the puzzles states on the output
-  --disable_auto_update
+  --disable-auto-update
                         Disable the auto update of heuristic
-  -u, --uniform_cost    Set an uniform cost (heuristic funcion return 0) ->
+  -r RANDOM, --random RANDOM
+                        Generate a random puzzle of a given size
+  --generate-solvable   Generate only solvable puzzle
+  --generate-unsolvable
+                        Generate only unsolvable puzzle
+  -u, --uniform-cost    Set an uniform cost (heuristic funcion return 0) ->
                         it's like dijkstra
   -g, --greedy          Go to only one path, used to find a solution very
                         quickly but it's not the better path
-  -f, --super_fast      Super fast algoritm -> just ignore the distance from
+  -f, --super-fast      Super fast algoritm -> just ignore the distance from
                         start
 ```
 Example

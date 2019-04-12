@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 import sys
+import random
 import argparse
 import traceback
 import srcs.global_var as g
-from srcs.generate_puzzle import generate_puzzle
+from srcs.generate_puzzle import generate_puzzle, generate_random
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
 from srcs.stats import print_stats, EnableStats
@@ -36,14 +37,21 @@ if __name__ == "__main__":
                             help="Print stats about functions [for debug]")
         parser.add_argument("--silent", action="store_true", default=False,
                             help="Don't display all the puzzles states on the output")
-        parser.add_argument("--disable_auto_update", action="store_false", default=True,
+        parser.add_argument("--disable-auto-update", action="store_false", default=True,
                             help="Disable the auto update of heuristic")
 
-        parser.add_argument("-u", "--uniform_cost", action="store_true", default=False,
+        parser.add_argument("-r", "--random", type=int, default=-1,
+                            help="Generate a random puzzle of a given size")
+        parser.add_argument("--generate-solvable", action="store_true", default=False,
+                            help="Generate only solvable puzzle")
+        parser.add_argument("--generate-unsolvable", action="store_true", default=False,
+                            help="Generate only unsolvable puzzle")
+
+        parser.add_argument("-u", "--uniform-cost", action="store_true", default=False,
                             help="Set an uniform cost (heuristic funcion return 0) -> it's like dijkstra")
         parser.add_argument("-g", "--greedy", action="store_true", default=False,
                             help="Go to only one path, used to find a solution very quickly but it's not the better path")
-        parser.add_argument("-f", "--super_fast", action="store_true", default=False,
+        parser.add_argument("-f", "--super-fast", action="store_true", default=False,
                             help="Super fast algoritm -> just ignore the distance from start")
 
         args = parser.parse_args()
@@ -60,7 +68,11 @@ if __name__ == "__main__":
         # init the global vairable
         g.init_global(param_=param)
 
-        if args.puzzle == "":
+        if args.random > 0:
+            # init some params about size
+            g.param['size'] = args.random
+            g.param['total_size'] = args.random * args.random
+        elif args.puzzle == "":
             data = "".join(sys.stdin.readlines())
             puzzle = parse(data)
             if puzzle is None:
@@ -70,14 +82,24 @@ if __name__ == "__main__":
             if puzzle is None:
                 exit(1)
 
+        # create a resolved puzzle
+        param['resolved_puzzle'] = generate_puzzle(param['size'])
+
+        if args.random > 0:
+            # generate a random puzzle
+            if args.generate_solvable:
+                puzzle = generate_random(solvable=True)
+            elif args.generate_unsolvable:
+                puzzle = generate_random(solvable=False)
+            else:
+                puzzle = generate_random(solvable=random.choice([True, False]))
+
         # if the puzzle is not solvable
         if not is_solvable(puzzle):
             print("this npuzzle is unsolvable")
             print(puzzle)
             exit(1)
 
-        # create a resolved puzzle
-        param['resolved_puzzle'] = generate_puzzle(param['size'])
 
         # get the heuristic for the first puzzle
         puzzle.calc_heuristic()
@@ -108,7 +130,7 @@ if __name__ == "__main__":
                     (' [solved puzzle]' if i+1 == len(list_puzzle) else "") + EOC))
                 print(list_puzzle[i])
         path = result['puzzle'].get_path()
-        if args.greedy:
+        if param['greedy_search']:
             print('using greedy algoritm')
         if param['super_fast']:
             print('using super fast algo')
