@@ -63,10 +63,12 @@ class npuzzleGui:
         self.win.geometry("+{}+{}".format(positionRight, positionDown))
 
     def printPuzzle(self):
-        for i in range(1, g.param['size'] * g.param['size']):
-            pos = self.get_pos(i)
-            img = self.boxes_img[ list(g.param['resolved_puzzle']).index(self.puzzle[i]) ]
-            self.boxes[self.puzzle[i]] = self.canvas.create_image(pos.X, pos.Y, image=img, anchor=tkinter.NW)
+        start0 = list(self.puzzle).index(0)
+        for i in range(0, g.param['size'] * g.param['size']):
+            if i != start0:
+                pos = self.get_pos(i)
+                img = self.boxes_img[ list(g.param['resolved_puzzle']).index(self.puzzle[i]) ]
+                self.boxes[self.puzzle[i]] = self.canvas.create_image(pos.X, pos.Y, image=img, anchor=tkinter.NW)
 
     def get_pos(self, i):
         x = int(i % g.param['size'])
