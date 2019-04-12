@@ -93,19 +93,12 @@ class npuzzleGui:
 
     def keyPress(self, e):
         if not self.is_solving:
-            print("Hey!")
             # start solving key
             if (e.keysym == "Return" or e.keysym == "space"):
                 self.is_solving = True
                 result = solving_out(self.puzzle)
                 moves = result['puzzle'].get_path()
                 self.resolveAnim(list(moves))
-
-            # changing speed key
-            if (e.keysym == "minus"):
-                self.resolve_step_time = self.resolve_step_time + 10 if self.resolve_step_time + 10 <= MAX_RESOLVE_STEP_TIME else MAX_RESOLVE_STEP_TIME
-            if (e.keysym == "plus"):
-                self.resolve_step_time = self.resolve_step_time - 10 if self.resolve_step_time - 10 >= 0 else 0
 
             # move keys
             if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
@@ -116,6 +109,12 @@ class npuzzleGui:
                 self.move('T')
             elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
                 self.move('R')
+
+        # changing speed key
+        if (e.keysym == "minus"):
+            self.resolve_step_time = self.resolve_step_time + 10 if self.resolve_step_time + 10 <= MAX_RESOLVE_STEP_TIME else MAX_RESOLVE_STEP_TIME
+        if (e.keysym == "plus"):
+            self.resolve_step_time = self.resolve_step_time - 10 if self.resolve_step_time - 10 >= 0 else 0
 
     def resolveAnim(self, moves):
         if (len(moves) > 0):
