@@ -9,8 +9,9 @@ See more on the [subject](https://github.com/tnicolas42/n-puzzle/blob/master/npu
 ## Usage
 ```
 usage: npuzzle.py [-h] [--heuristic {manhattan,hamming,linear_conflict}] [-s]
-                  [--silent] [--disable-auto-update] [-r RANDOM]
-                  [--generate-solvable] [--generate-unsolvable] [-u] [-g] [-f]
+                  [--silent] [--disable-auto-update] [--gui] [--img IMG]
+                  [--w_size W_SIZE] [-r RANDOM] [--generate-solvable]
+                  [--generate-unsolvable] [-u] [-g] [-f]
                   [puzzle]
 
 positional arguments:
@@ -24,6 +25,9 @@ optional arguments:
   --silent              Don't display all the puzzles states on the output
   --disable-auto-update
                         Disable the auto update of heuristic
+  --gui                 Open the graphical interface
+  --img IMG             Source of the picture for the graphical interface
+  --w_size W_SIZE       Size of the gui windows
   -r RANDOM, --random RANDOM
                         Generate a random puzzle of a given size
   --generate-solvable   Generate only solvable puzzle
