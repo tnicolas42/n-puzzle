@@ -3,13 +3,14 @@ import sys
 import random
 import argparse
 import traceback
+from pathlib import Path
 import srcs.global_var as g
 from srcs.generate_puzzle import generate_puzzle, generate_random
+from srcs.stats import print_stats, EnableStats
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
-from srcs.stats import print_stats, EnableStats
-from srcs.algo import a_star_algo, heuristic_list
-
+from srcs.solving_out import solving_out
+from srcs.gui.gui import start_gui
 
 admissible_heuristics = ('manhattan', 'hamming', 'linear_conflict')
 
@@ -22,9 +23,6 @@ param = dict(
     size=None,  # 3 if 3*3
     total_size=None,  # 9 if 3*3
 )
-
-BOLD = "\033[1m"
-EOC = "\x1B[0m"
 
 if __name__ == "__main__":
     try:
@@ -39,6 +37,13 @@ if __name__ == "__main__":
                             help="Don't display all the puzzles states on the output")
         parser.add_argument("--disable-auto-update", action="store_false", default=True,
                             help="Disable the auto update of heuristic")
+
+        parser.add_argument("--gui", action="store_true", default=False,
+                            help="Open the graphical interface")
+        parser.add_argument("--img", type=str, default="img/3grid.png",
+                            help="Source of the picture for the graphical interface")
+        parser.add_argument("--w_size", type=int, default=-1,
+                            help="Size of the gui windows")
 
         parser.add_argument("-r", "--random", type=int, default=-1,
                             help="Generate a random puzzle of a given size")
@@ -66,7 +71,7 @@ if __name__ == "__main__":
             param['heuristic'] = 'uniform_cost'
 
         # init the global vairable
-        g.init_global(param_=param)
+        g.init_global(param_=param, args_=args)
 
         if args.random > 0:
             # init some params about size
@@ -100,43 +105,15 @@ if __name__ == "__main__":
             print(puzzle)
             exit(1)
 
-
-        # get the heuristic for the first puzzle
-        puzzle.calc_heuristic()
-        # start the main algo
-        result = a_star_algo(puzzle)
-
-        if not result and param['greedy_search']:
-            param['greedy_search'] = False
-            print('unable to get the solution with a greedy algoritm, retry without greedy')
-            result = a_star_algo(puzzle)
-
-        # if the algo fail (no solution)
-        if not result:
-            print("after trying to resolve it, this npuzzle is unsolvable")
-            print(puzzle)
-            exit(1)
-
-        # prin the result
-        print("base puzzle:")
-        print(puzzle)
-        if args.silent:
-            print("result:")
-            print(result['puzzle'])
+        if (args.gui):
+            img_file = Path(args.img)
+            if img_file.is_file():
+                start_gui(args.img, puzzle, args.w_size)
+            else:
+                print("error while loading img: not a valid file")
+                exit(1)
         else:
-            list_puzzle = result['puzzle'].get_all_puzzles()
-            for i in range(1, len(list_puzzle)):
-                print(BOLD + 'move %d: -> %s%s' % (i, list_puzzle[i].last_move,
-                    (' [solved puzzle]' if i+1 == len(list_puzzle) else "") + EOC))
-                print(list_puzzle[i])
-        path = result['puzzle'].get_path()
-        if param['greedy_search']:
-            print('using greedy algoritm')
-        if param['super_fast']:
-            print('using super fast algo')
-        print('all moves (%s%d%s): %s' % (BOLD, len(path), EOC, path))
-        print('max opened at the same time: %s%d%s' % (BOLD, result['max_opened'], EOC))
-        print('total opened: %s%d%s -> using %s' % (BOLD, result['total_opened'], EOC, param['heuristic']))
+            solving_out(puzzle)
     except Exception as e:
         traceback.print_exc()
 

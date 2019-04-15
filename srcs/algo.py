@@ -55,6 +55,12 @@ def a_star_algo(puzzle):
         puzzle=None,
     )
 
+
+    # check if it is finish
+    if puzzle == g.param['resolved_puzzle']:
+        result['puzzle'] = puzzle
+        return result  # the algo is finished
+
     while opened != []:
         result['max_opened'] = max(result['max_opened'], len(opened))
 
