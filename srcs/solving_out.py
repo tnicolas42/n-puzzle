@@ -7,6 +7,7 @@ EOC = "\x1B[0m"
 def solving_out(puzzle):
     # get the heuristic for the first puzzle
     puzzle.calc_heuristic()
+    puzzle.last_move = None
     # start the main algo
     result = a_star_algo(puzzle)
 

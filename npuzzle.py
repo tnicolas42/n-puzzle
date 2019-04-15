@@ -115,6 +115,6 @@ if __name__ == "__main__":
         else:
             solving_out(puzzle)
     except Exception as e:
-        traceback.print_exc()
+        print("Error")
 
     print_stats()

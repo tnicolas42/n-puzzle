@@ -240,14 +240,16 @@ class Puzzle(list):
             return ""
         return self.parent.get_path() + self.last_move
 
-    def get_all_puzzles(self, list_puzzle=[]):
+    def get_all_puzzles(self, first_call=True, list_puzzle=[]):
         """
         get the list of all puzzles
         """
+        if first_call == True:
+            list_puzzle = []
         list_puzzle.insert(0, self)
         if self.parent is None:
             return list_puzzle
-        return self.parent.get_all_puzzles(list_puzzle)
+        return self.parent.get_all_puzzles(first_call=False, list_puzzle=list_puzzle)
 
 
     # compare function <
