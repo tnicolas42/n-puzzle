@@ -42,6 +42,8 @@ if __name__ == "__main__":
                             help="Open the graphical interface")
         parser.add_argument("--img", type=str, default="img/3grid.png",
                             help="Source of the picture for the graphical interface")
+        parser.add_argument("--w_size", type=int, default=-1,
+                            help="Size of the gui windows")
 
         parser.add_argument("-r", "--random", type=int, default=-1,
                             help="Generate a random puzzle of a given size")
@@ -106,7 +108,7 @@ if __name__ == "__main__":
         if (args.gui):
             img_file = Path(args.img)
             if img_file.is_file():
-                start_gui(args.img, puzzle)
+                start_gui(args.img, puzzle, args.w_size)
             else:
                 print("error while loading img: not a valid file")
                 exit(1)

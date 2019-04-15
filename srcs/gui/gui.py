@@ -1,12 +1,13 @@
-import tkinter
+import os
 import cv2
-import PIL.Image, PIL.ImageTk
+import tkinter
+import numpy as np
 import srcs.global_var as g
+from time import time, sleep
+import PIL.Image, PIL.ImageTk
 from srcs.gui.utility import Point
 from srcs.generate_puzzle import spiral
-import os
 from platform import system as platform
-from time import time, sleep
 from srcs.solving_out import solving_out
 
 ANIM_STEP_TIME = 25
@@ -19,15 +20,21 @@ class npuzzleGui:
     """
     boxes_img = []
 
-    def __init__(self, win, win_title, img_path, puzzle):
+    def __init__(self, win, win_title, img_path, puzzle, w_size):
         self.win = win
         self.win.title(win_title)
+
+        # manage window size
+        max_w = min(self.win.winfo_screenwidth(), self.win.winfo_screenheight())
+        self.w_size = w_size if w_size >= 50 else int(max_w / 2)
+        self.w_size = self.w_size if self.w_size <= max_w else max_w
+        self.win.geometry(str(self.w_size) + 'x' + str(self.w_size))
         self.win.resizable(0, 0) # Don't allow resizing in the x or y direction
 
         self.puzzle = puzzle
 
-        # Load an image using OpenCV
-        self.cv_img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+        # load image and scale it if necessary
+        self.load_img(img_path)
 
         # get image dimension and create canvas accordingly
         self.img_w, self.img_h, self.img_no_channels = self.cv_img.shape
@@ -47,11 +54,39 @@ class npuzzleGui:
         self.win.bind('<Key>', self.keyPress)
 
         self.resolve_step_time = int(MAX_RESOLVE_STEP_TIME / 2)
+        self.is_solving = False
 
         self.centerWindows()
         if platform() == 'Darwin':  # How Mac OS X is identified by Python
             os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
         self.win.mainloop()
+
+    def load_img(self, img_path):
+        # load the image using OpenCV
+        base_img = cv2.imread(img_path)
+        old_size = base_img.shape[:2]
+
+        # scale image to match w_size
+        ratio = self.w_size / max(old_size)
+        fit_ratio = self.w_size / min(old_size)
+        new_size = tuple([int(x * ratio) for x in old_size])
+        fit_size = tuple([int(x * fit_ratio) for x in old_size])
+        self.cv_img = cv2.resize(base_img, (new_size[1], new_size[0]))
+        blur_img = cv2.resize(base_img, (fit_size[1], fit_size[0]))
+
+        # calculate the offset
+        left = (self.w_size - new_size[1]) // 2
+        top = (self.w_size - new_size[0]) // 2
+        # for the background
+        bg_left = (fit_size[1] - self.w_size) // 2
+        bg_top = (fit_size[0] - self.w_size) // 2
+
+        # create background image (used only if image is not a square)
+        img = blur_img[bg_top:bg_top + self.w_size, bg_left:bg_left + self.w_size]
+        img = cv2.blur(img, (200,200))
+        # put scaled image to the final image
+        img[top:top + self.cv_img.shape[0], left:left + self.cv_img.shape[1]] = self.cv_img
+        self.cv_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     def centerWindows(self):
         """
@@ -91,11 +126,23 @@ class npuzzleGui:
                 self.boxes_img.append(box_img)
 
     def keyPress(self, e):
-        # start solving key
-        if (e.keysym == "Return" or e.keysym == "space"):
-            result = solving_out(self.puzzle)
-            moves = result['puzzle'].get_path()
-            self.resolveAnim(list(moves))
+        if not self.is_solving:
+            # start solving key
+            if (e.keysym == "Return" or e.keysym == "space"):
+                self.is_solving = True
+                result = solving_out(self.puzzle)
+                moves = result['puzzle'].get_path()
+                self.resolveAnim(list(moves))
+
+            # move keys
+            if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
+                self.move('B')
+            elif (e.keysym == "Right" or e.keysym == "d") and self.puzzle.pos0xy[1] > 0:
+                self.move('L')
+            elif (e.keysym == "Down" or e.keysym == "s") and self.puzzle.pos0xy[0] > 0:
+                self.move('T')
+            elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
+                self.move('R')
 
         # changing speed key
         if (e.keysym == "minus"):
@@ -103,20 +150,12 @@ class npuzzleGui:
         if (e.keysym == "plus"):
             self.resolve_step_time = self.resolve_step_time - 10 if self.resolve_step_time - 10 >= 0 else 0
 
-        # move keys
-        if (e.keysym == "Up" or e.keysym == "w") and self.puzzle.pos0xy[0] < g.param['size'] - 1:
-            self.move('B')
-        elif (e.keysym == "Right" or e.keysym == "d") and self.puzzle.pos0xy[1] > 0:
-            self.move('L')
-        elif (e.keysym == "Down" or e.keysym == "s") and self.puzzle.pos0xy[0] > 0:
-            self.move('T')
-        elif (e.keysym == "Left" or e.keysym == "a") and self.puzzle.pos0xy[1] < g.param['size'] - 1:
-            self.move('R')
-
     def resolveAnim(self, moves):
         if (len(moves) > 0):
             self.move(moves.pop(0))
             self.canvas.after(ANIM_STEP_TIME*ANIM_STEP + self.resolve_step_time, self.resolveAnim, moves)
+        else:
+            self.is_solving = False
 
     def move(self, direction):
         save = list(self.puzzle)
@@ -137,5 +176,5 @@ class npuzzleGui:
             self.canvas.move(shape, shift.X, shift.Y)
             self.canvas.after(ANIM_STEP_TIME, self.moveShape, shape, shift, maxStep, step+1)
 
-def start_gui(img_path, puzzle):
-    npuzzleGui(tkinter.Tk(), "N-Puzzle", img_path, puzzle)
+def start_gui(img_path, puzzle, w_size):
+    npuzzleGui(tkinter.Tk(), "N-Puzzle", img_path, puzzle, w_size)
