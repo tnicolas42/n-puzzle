@@ -6,11 +6,11 @@ import traceback
 from pathlib import Path
 import srcs.global_var as g
 from srcs.generate_puzzle import generate_puzzle, generate_random
+from srcs.stats import print_stats, EnableStats
 from srcs.parser import parse_from_file, parse
 from srcs.is_solvable import is_solvable
-from srcs.stats import print_stats, EnableStats
-from srcs.gui.gui import start_gui
 from srcs.solving_out import solving_out
+from srcs.gui.gui import start_gui
 
 admissible_heuristics = ('manhattan', 'hamming', 'linear_conflict')
 
@@ -39,11 +39,11 @@ if __name__ == "__main__":
                             help="Disable the auto update of heuristic")
 
         parser.add_argument("--gui", action="store_true", default=False,
-                        help="Open the graphical interface")
+                            help="Open the graphical interface")
         parser.add_argument("--img", type=str, default="img/3grid.png",
-                        help="Source of the picture for the graphical interface")
+                            help="Source of the picture for the graphical interface")
         parser.add_argument("--w_size", type=int, default=-1,
-                        help="Size of the gui windows")
+                            help="Size of the gui windows")
 
         parser.add_argument("-r", "--random", type=int, default=-1,
                             help="Generate a random puzzle of a given size")

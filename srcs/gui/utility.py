@@ -13,7 +13,7 @@ class Point:
         self.Y = self.Y + shift.y
 
     def __str__(self):
-        return "Point(%s,%s)"%(self.X, self.Y) 
+        return "Point(%s,%s)"%(self.X, self.Y)
 
     def X(self):
         return self.X
