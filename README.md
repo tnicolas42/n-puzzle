@@ -89,32 +89,32 @@ python3 mean_time.py 3 --heuristic manhattan --path test/all_tests
 ```
 Return
 ```
-test3.0.puzzle: 0.3s
-test3.1.puzzle: 0.06s
-test3.10.puzzle: 0.16s
-test3.11.puzzle: 0.1s
-test3.12.puzzle: 1.37s
-test3.13.puzzle: 0.4s
-test3.14.puzzle: 0.35s
-test3.15.puzzle: 0.19s
-test3.16.puzzle: 0.08s
-test3.17.puzzle: 0.09s
-test3.18.puzzle: 0.29s
-test3.19.puzzle: 0.33s
-test3.2.puzzle: 0.65s
-test3.3.puzzle: 0.73s
-test3.4.puzzle: 0.13s
-test3.5.puzzle: 0.1s
-test3.6.puzzle: 0.92s
-test3.7.puzzle: 0.09s
+test3.15.puzzle: 0.35s
+test3.6.puzzle: 0.19s
+test3.19.puzzle: 0.18s
 test3.8.puzzle: 0.19s
-test3.9.puzzle: 0.92s
+test3.4.puzzle: 0.19s
+test3.17.puzzle: 0.18s
+test3.0.puzzle: 0.19s
+test3.13.puzzle: 0.19s
+test3.11.puzzle: 0.19s
+test3.2.puzzle: 0.19s
+test3.7.puzzle: 0.19s
+test3.14.puzzle: 0.18s
+test3.18.puzzle: 0.18s
+test3.9.puzzle: 0.19s
+test3.16.puzzle: 0.18s
+test3.5.puzzle: 0.19s
+test3.12.puzzle: 0.19s
+test3.1.puzzle: 0.19s
+test3.3.puzzle: 0.18s
+test3.10.puzzle: 0.18s
 
 summary for 20 files using linear_conflict
-total time: 0m 7.45s
-mean time: 0.37s
-max time: 1.37s
-min time: 0.06s
+total time: 0m 3.89s
+mean time: 0.19s
+max time: 0.35s
+min time: 0.18s
 ```
 
 ## Tests
