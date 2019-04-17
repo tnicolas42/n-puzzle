@@ -59,6 +59,16 @@ max opened at the same time: 722
 total opened: 2007 -> using linear_conflict
 ```
 
+```
+python3 npuzzle.py -r5 --generate-solvable --silent -f --gui --img img/montain.jpg
+```
+![](gif/5*5resolv.gif)
+
+```
+python3 npuzzle.py -r3 --generate-solvable --silent --gui
+```
+![](gif/3*3resolv.gif)
+
 ## Generate puzzle
 To generate puzzle:
 ```bash
