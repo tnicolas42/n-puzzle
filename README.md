@@ -42,7 +42,7 @@ optional arguments:
 ```
 Example
 ```
-python3 npuzzle.py test/all_tests/test3.12.puzzle --heuristic linear_conflict --slient
+python3 npuzzle.py test/all_tests/test3.12.puzzle --heuristic linear_conflict --silent
 ```
 Return
 ```
